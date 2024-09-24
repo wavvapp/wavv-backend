@@ -1,5 +1,4 @@
-import { Controller, Get } from "routing-controllers";
-
+import { Body, Controller, Get, Param, Post } from "routing-controllers";
 @Controller()
 export class HomeController {
   @Get("/api")
