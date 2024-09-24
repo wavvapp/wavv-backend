@@ -5,8 +5,4 @@ export class HomeController {
   getHello() {
     return "Hello World!";
   }
-  @Post("/new-user")
-  createUser(@Body() body: { name: string, phoneNumber: string, address: string }) {
-    return "Please provide the necessary user details";
-  }
 }
