@@ -13,6 +13,6 @@ useExpressServer(app, {
 const storage = getMetadataArgsStorage()
 const spec = routingControllersToSpec(storage)
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
 export default app;
