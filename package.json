@@ -10,16 +10,17 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "migration:generate": "sh -c 'npx typeorm-ts-node-esm migration:generate ./src/database/migrations/$0 -d ./src/data-source.ts'",
-    "migration:create": "npx typeorm-ts-node-esm migration:create -d ./src/data-source.ts",
-    "migration:run": "npx typeorm-ts-node-esm migration:run -d ./src/data-source.ts",
-    "migration:revert": "npx typeorm-ts-node-esm  migration:revert -d ./src/data-source.ts"
+    "migration:generate": "sh -c 'npx typeorm-ts-node-commonjs migration:generate ./src/database/migrations/$0 -d ./src/data-source.ts'",
+    "migration:create": "npx typeorm-ts-node-commonjs migration:create -d ./src/data-source.ts",
+    "migration:run": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
+    "migration:revert": "npx typeorm-ts-node-commonjs  migration:revert -d ./src/data-source.ts"
   },
   "dependencies": {
     "class-transformer": "^0.4.1",
     "class-validator": "^0.13.2",
     "crc-32": "^1.2.2",
     "express": "^4.17.1",
+    "pg": "^8.13.0",
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.9.0",
     "typeorm": "^0.3.20",
