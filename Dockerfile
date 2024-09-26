@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM node:14
+FROM node:20.17
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -16,22 +16,22 @@ COPY . .
 
 # app env variables
 ARG POSTGRES_HOST
-ARG POSTGRES_HOST
+ARG POSTGRES_PORT
 ARG POSTGRES_USER
 ARG POSTGRES_PASSWORD
 ARG POSTGRES_DB
 
 ENV POSTGRES_HOST=$POSTGRES_HOST \
-    POSTGRES_HOST=$POSTGRES_HOST \
+    POSTGRES_PORT=$POSTGRES_PORT \
     POSTGRES_USER=$POSTGRES_USER \
     POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
     POSTGRES_DB=$POSTGRES_DB
 
 # Build the TypeScript code
-RUN npm run db:migrate
+RUN pnpm run migration:run
 
 # Build the TypeScript code
-RUN npm run build
+RUN pnpm run build
 
 # Expose the port the app runs on
 EXPOSE 8000
