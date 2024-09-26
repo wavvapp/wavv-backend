@@ -3,15 +3,16 @@ import express from "express";
 import { getMetadataArgsStorage, useExpressServer } from "routing-controllers";
 import { HomeController } from "./controllers/HomeController";
 import { routingControllersToSpec } from "routing-controllers-openapi";
-const swaggerUi = require('swagger-ui-express');
+import { AuthController } from "./controllers/AuthController";
+const swaggerUi = require("swagger-ui-express");
 const app = express();
 
 useExpressServer(app, {
-  controllers: [HomeController],
+  controllers: [HomeController, AuthController],
 });
 
-const storage = getMetadataArgsStorage()
-const spec = routingControllersToSpec(storage)
+const storage = getMetadataArgsStorage();
+const spec = routingControllersToSpec(storage);
 
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
