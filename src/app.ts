@@ -3,15 +3,27 @@ import express from "express";
 import { getMetadataArgsStorage, useExpressServer } from "routing-controllers";
 import { HomeController } from "./controllers/HomeController";
 import { routingControllersToSpec } from "routing-controllers-openapi";
-const swaggerUi = require('swagger-ui-express');
+import { AuthController } from "./controllers/AuthController";
+import { currentUserChecker } from "./middlewares/authorization";
+const swaggerUi = require("swagger-ui-express");
 const app = express();
 
-useExpressServer(app, {
-  controllers: [HomeController],
-});
+const options = {
+  currentUserChecker,
+  controllers: [HomeController, AuthController],
+};
 
-const storage = getMetadataArgsStorage()
-const spec = routingControllersToSpec(storage)
+useExpressServer(app, options);
+
+const storage = getMetadataArgsStorage();
+
+const spec = routingControllersToSpec(storage, options, {
+  info: {
+    description: "API Documentation for `SAC`",
+    title: "API Documentation",
+    version: "1.0.0",
+  },
+});
 
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(spec));
 

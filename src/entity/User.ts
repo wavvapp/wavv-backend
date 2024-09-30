@@ -15,43 +15,37 @@ export class User {
   id: string;
 
   @Column()
-  name: string;
+  names: string;
 
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   phoneNumber: string;
 
-  @Column()
+  @Column({ nullable: true })
   location: string;
 
-  @Column()
+  @Column({ nullable: true })
   bio: string;
 
-  @Column()
+  @Column({ nullable: true })
   profilePictureUrl: string;
 
   @Column()
   password: string;
 
-  @Column()
+  @Column({ default: false })
   emailVerified: boolean;
 
-  @Column()
-  phoneVerified: boolean;
-
-  @Column()
+  @Column({ default: true })
   isActive: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   lastLogin: Date;
 
   @Column({ nullable: true })
   resetPasswordToken: string;
-
-  @Column({ nullable: true })
-  resetPasswordTokenExpiresAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;
