@@ -15,6 +15,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 20.X
+          
+      - name: Install Railway
+        run: npm i -g pnpm
 
       - name: Install packages
         run: pnpm install
