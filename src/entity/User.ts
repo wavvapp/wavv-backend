@@ -32,7 +32,7 @@ export class User {
   @Column({ nullable: true })
   profilePictureUrl: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @Column({ default: false })
@@ -46,6 +46,9 @@ export class User {
 
   @Column({ nullable: true })
   resetPasswordToken: string;
+
+  @Column({ nullable: true })
+  provider: string;
 
   @CreateDateColumn()
   createdAt: Date;
