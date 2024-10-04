@@ -5,12 +5,13 @@ import { HomeController } from "./controllers/HomeController";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import { AuthController } from "./controllers/AuthController";
 import { currentUserChecker } from "./middlewares/authorization";
+import { UsersController } from "./controllers/UsersController";
 const swaggerUi = require("swagger-ui-express");
 const app = express();
 
 const options = {
   currentUserChecker,
-  controllers: [HomeController, AuthController],
+  controllers: [HomeController, AuthController, UsersController],
 };
 
 useExpressServer(app, options);
