@@ -12,6 +12,7 @@ import jwt from "jsonwebtoken";
 import db from "../database/db";
 import type { AppUser } from "../types/Auth.js";
 import { IsNotEmpty, IsEmail, IsString, IsOptional } from "class-validator";
+import { OAuth2Client } from "google-auth-library";
 
 class LoginBody {
   @IsNotEmpty()
@@ -95,6 +96,12 @@ class UpdateProfileBody {
   profilePictureUrl?: string;
 }
 
+class GoogleSigninBody {
+  @IsNotEmpty()
+  @IsString()
+  token: string;
+}
+
 @JsonController("/api/auth")
 export class AuthController {
   @Post("/login")
@@ -155,6 +162,7 @@ export class AuthController {
       email,
       password: hashedPassword,
       names,
+      provider: "email",
     });
 
     const userData = {
@@ -353,5 +361,89 @@ export class AuthController {
     return {
       message: "Profile updated successfully",
     };
+  }
+
+  @Post("/google-signin")
+  async googleSignin(@Body() body: GoogleSigninBody) {
+    const { token } = body;
+
+    const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    const client = new OAuth2Client(CLIENT_ID);
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload) throw new BadRequestError("Invalid Google token");
+
+    const userInfo = {
+      email: payload["email"],
+      name: payload["name"],
+      picture: payload["picture"],
+    };
+
+    const user = await db.users.findOneBy({
+      email: userInfo.email,
+    });
+
+    if (!user) {
+      const newUser = await db.users.save({
+        email: userInfo.email,
+        names: userInfo.name,
+        profilePictureUrl: userInfo.picture,
+        provider: "google",
+      });
+
+      const userData = {
+        id: newUser.id,
+        email: newUser.email,
+        names: newUser.names,
+        phoneNumber: newUser.phoneNumber,
+        emailVerified: newUser.emailVerified,
+        provider: newUser.provider,
+        profilePictureUrl: newUser.profilePictureUrl,
+        isNew: true,
+      };
+
+      // generate access and refresh tokens
+      const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
+        expiresIn: "15m",
+      });
+
+      const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
+        expiresIn: "7d",
+      });
+
+      return { ...userData, access_token, refresh_token };
+    }
+
+    // check if provider is not google
+    if (user.provider !== "google")
+      throw new BadRequestError(
+        "User with that email already exists. Please login with email and password"
+      );
+
+    const userData = {
+      id: user.id,
+      email: user.email,
+      names: user.names,
+      phoneNumber: user.phoneNumber,
+      emailVerified: user.emailVerified,
+      provider: user.provider,
+      profilePictureUrl: user.profilePictureUrl,
+    };
+
+    // generate access and refresh tokens
+    const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
+      expiresIn: "15m",
+    });
+
+    const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
+      expiresIn: "7d",
+    });
+
+    return { ...userData, access_token, refresh_token };
   }
 }
