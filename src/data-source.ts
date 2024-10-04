@@ -6,7 +6,11 @@ import { Friendship } from "./entity/Friendship";
 import { Signal } from "./entity/Signal";
 import { FriendSignal } from "./entity/FriendSignal";
 
-export const MIGRATION_FILES = ["./src/database/migrations/**/*.ts"];
+export const MIGRATION_FILES =
+  process.env.NODE_ENV === "development"
+    ? ["./src/database/migrations/**/*.ts"]
+    : ["./dist/database/migrations/**/*.js"];
+
 const isTest = process.env.NODE_ENV === "test";
 const database = (isTest ? "test_" : "") + process.env.POSTGRES_DB;
 
