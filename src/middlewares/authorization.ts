@@ -30,8 +30,6 @@ export const currentUserChecker = async (
         const jwtPayload = decoded as JwtPayload;
         const userData = jwtPayload as AppUser;
 
-        console.log(userData);
-
         if (userData) {
           resolve(userData);
         } else {
