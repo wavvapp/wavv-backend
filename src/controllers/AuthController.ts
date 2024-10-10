@@ -13,6 +13,7 @@ import db from "../database/db";
 import type { AppUser } from "../types/Auth.js";
 import { IsNotEmpty, IsEmail, IsString, IsOptional } from "class-validator";
 import { OAuth2Client } from "google-auth-library";
+import { ResponseSchema } from "routing-controllers-openapi";
 
 class LoginBody {
   @IsNotEmpty()
