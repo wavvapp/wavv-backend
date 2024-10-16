@@ -101,6 +101,7 @@ class GoogleSigninBody {
   @IsNotEmpty()
   @IsString()
   token: string;
+  platform: string;
 }
 
 @JsonController("/api/auth")
@@ -366,14 +367,26 @@ export class AuthController {
 
   @Post("/google-signin")
   async googleSignin(@Body() body: GoogleSigninBody) {
-    const { token } = body;
+    const { token, platform } = body;
 
-    const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-    const client = new OAuth2Client(CLIENT_ID);
+    if (!platform) {
+      throw new BadRequestError("Platform is required");
+    }
+
+    // check if platform is android or ios
+    if (platform !== "android" && platform !== "ios") {
+      throw new BadRequestError("Invalid platform");
+    }
+
+    const ANDROID_CLIENT_ID = process.env.ANDROID_GOOGLE_CLIENT_ID;
+    const IOS_CLIENT_ID = process.env.ANDROID_GOOGLE_CLIENT_ID;
+
+    const clientId = platform === "android" ? ANDROID_CLIENT_ID : IOS_CLIENT_ID;
+    const client = new OAuth2Client(clientId);
 
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: CLIENT_ID,
+      audience: clientId,
     });
 
     const payload = ticket.getPayload();
