@@ -1,19 +1,27 @@
-import "reflect-metadata";
+import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import express from "express";
+import "reflect-metadata";
 import { getMetadataArgsStorage, useExpressServer } from "routing-controllers";
-import { HomeController } from "./controllers/HomeController";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import { AuthController } from "./controllers/AuthController";
-import { currentUserChecker } from "./middlewares/authorization";
+import { FriendSignalController } from "./controllers/FriendSignalController";
+import { FriendshipController } from "./controllers/FriendshipController";
+import { HomeController } from "./controllers/HomeController";
 import { UsersController } from "./controllers/UsersController";
-import { validationMetadatasToSchemas } from "class-validator-jsonschema";
+import { currentUserChecker } from "./middlewares/authorization";
 
 const swaggerUi = require("swagger-ui-express");
 const app = express();
 
 const options = {
   currentUserChecker,
-  controllers: [HomeController, AuthController, UsersController],
+  controllers: [
+    HomeController,
+    AuthController,
+    UsersController,
+    FriendSignalController,
+    FriendshipController,
+  ],
 };
 
 useExpressServer(app, options);

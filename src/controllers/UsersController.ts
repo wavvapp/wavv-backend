@@ -4,10 +4,9 @@ import {
   JsonController,
   QueryParam,
 } from "routing-controllers";
-import db from "../database/db";
-import { AppUser } from "../types/Auth";
 import { FindOptionsWhere, Like, Not } from "typeorm";
 import { User } from "../entity/User";
+import { AppUser } from "../types/Auth";
 
 @JsonController("/api/users")
 export class UsersController {
@@ -24,7 +23,7 @@ export class UsersController {
       filterObj["names"] = Like(`%${q}%`);
     }
 
-    const users = await db.users.find({
+    const users = await User.find({
       where: filterObj,
     });
 

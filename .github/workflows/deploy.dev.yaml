@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 20.X
                     
-      - name: Install Railway
+      - name: Install pnpm
         run: npm i -g pnpm
 
       - name: Install packages
