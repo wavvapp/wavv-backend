@@ -1,3 +1,7 @@
+import bcrypt from "bcrypt";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { OAuth2Client } from "google-auth-library";
+import jwt from "jsonwebtoken";
 import {
   BadRequestError,
   Body,
@@ -7,13 +11,8 @@ import {
   Patch,
   Post,
 } from "routing-controllers";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import db from "../database/db";
-import type { AppUser } from "../types/Auth.js";
-import { IsNotEmpty, IsEmail, IsString, IsOptional } from "class-validator";
-import { OAuth2Client } from "google-auth-library";
-import { ResponseSchema } from "routing-controllers-openapi";
+import { User } from "../entity/User";
+import type { AppUser } from "../types/Auth";
 
 class LoginBody {
   @IsNotEmpty()
@@ -110,7 +109,7 @@ export class AuthController {
   async login(@Body({ required: false, validate: true }) body: LoginBody) {
     const { email, password } = body;
 
-    const user = await db.users.findOneBy({
+    const user = await User.findOneBy({
       email,
     });
 
@@ -151,7 +150,7 @@ export class AuthController {
   ) {
     const { email, password, names } = body;
 
-    const userExists = await db.users.findOneBy({
+    const userExists = await User.findOneBy({
       email,
     });
 
@@ -160,7 +159,7 @@ export class AuthController {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await db.users.save({
+    const newUser = await User.save({
       email,
       password: hashedPassword,
       names,
@@ -195,7 +194,7 @@ export class AuthController {
     const { email } = body;
 
     // check if user exists
-    const user = await db.users.findOneBy({
+    const user = await User.findOneBy({
       email,
     });
 
@@ -210,7 +209,7 @@ export class AuthController {
     // TODO: send email with reset password link
 
     // update user with reset password token and expiry date
-    await db.users.update(user.id, {
+    await User.update(user.id, {
       resetPasswordToken,
     });
 
@@ -234,7 +233,7 @@ export class AuthController {
       console.log(email);
 
       // check if user exists
-      const user = await db.users.findOneBy({
+      const user = await User.findOneBy({
         email,
         resetPasswordToken: token,
       });
@@ -245,7 +244,7 @@ export class AuthController {
       // update user with new password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await db.users.update(user.id, {
+      await User.update(user.id, {
         password: hashedPassword,
         resetPasswordToken: "",
       });
@@ -273,7 +272,7 @@ export class AuthController {
         "New password must be different from old password"
       );
 
-    const user = await db.users.findOneBy({
+    const user = await User.findOneBy({
       id: appUser.id,
     });
 
@@ -285,7 +284,7 @@ export class AuthController {
 
     const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
-    await db.users.update(user.id, {
+    await User.update(user.id, {
       password: hashedPassword,
     });
 
@@ -305,7 +304,7 @@ export class AuthController {
         id: string;
       };
 
-      const user = await db.users.findOneBy({
+      const user = await User.findOneBy({
         id: decoded.id,
       });
 
@@ -358,7 +357,7 @@ export class AuthController {
     if (bio) data.bio = bio;
     if (profilePictureUrl) data.profilePictureUrl = profilePictureUrl;
 
-    await db.users.update(appUser.id, data);
+    await User.update(appUser.id, data);
 
     return {
       message: "Profile updated successfully",
@@ -398,12 +397,12 @@ export class AuthController {
       picture: payload["picture"],
     };
 
-    const user = await db.users.findOneBy({
+    const user = await User.findOneBy({
       email: userInfo.email,
     });
 
     if (!user) {
-      const newUser = await db.users.save({
+      const newUser = await User.save({
         email: userInfo.email,
         names: userInfo.name,
         profilePictureUrl: userInfo.picture,
