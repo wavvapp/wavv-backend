@@ -30,9 +30,12 @@
     "routing-controllers-openapi": "^4.0.0",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.20",
+    "typeorm-factories": "^1.0.1",
+    "typeorm-factory": "^0.0.14",
     "typeorm-naming-strategies": "^4.1.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^9.0.7",

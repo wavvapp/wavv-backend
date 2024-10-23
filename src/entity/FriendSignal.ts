@@ -1,15 +1,16 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
+  BaseEntity,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from "typeorm";
 import { Friendship } from "./Friendship";
 import { Signal } from "./Signal";
 
 @Entity()
-export class FriendSignal {
+export class FriendSignal extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
