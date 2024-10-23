@@ -1,15 +1,16 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
+  BaseEntity,
   Column,
-  ManyToOne,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from "typeorm";
 import { User } from "./User";
 
 @Entity()
-export class Friendship {
+export class Friendship extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
