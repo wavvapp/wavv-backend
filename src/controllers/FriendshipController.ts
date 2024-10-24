@@ -1,23 +1,26 @@
 import {
-    Authorized,
-    Body,
-    CurrentUser,
-    Delete,
-    Get,
-    HttpError,
-    JsonController,
-    Param,
-    Post,
-    Put,
+  Authorized,
+  Body,
+  CurrentUser,
+  Delete,
+  Get,
+  HttpError,
+  JsonController,
+  Param,
+  Post,
+  Put,
 } from "routing-controllers";
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
+import { IsNotEmpty, isNumber, IsString } from "class-validator";
 
 class CreateFriendshipDto {
+  @IsNotEmpty()
   friendId: string;
 }
 
 class UpdateFriendshipDto {
+  @IsNotEmpty()
   status: string;
 }
 

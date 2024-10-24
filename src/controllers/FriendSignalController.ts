@@ -1,21 +1,24 @@
 import {
-    Authorized,
-    Body,
-    CurrentUser,
-    Delete,
-    Get,
-    HttpError,
-    JsonController,
-    Param,
-    Post,
+  Authorized,
+  Body,
+  CurrentUser,
+  Delete,
+  Get,
+  HttpError,
+  JsonController,
+  Param,
+  Post,
 } from "routing-controllers";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Friendship } from "../entity/Friendship";
 import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
+import { IsNotEmpty } from "class-validator";
 
 class CreateFriendSignalDto {
+  @IsNotEmpty()
   friendshipId: string;
+  @IsNotEmpty()
   signalId: string;
 }
 
