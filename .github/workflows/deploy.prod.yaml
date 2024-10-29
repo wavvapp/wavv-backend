@@ -1,7 +1,9 @@
 name: Deploy to production
 
 on:
-  workflow_dispatch
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -15,7 +17,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 20.X
-          
+
       - name: Install Railway
         run: npm i -g pnpm
 
