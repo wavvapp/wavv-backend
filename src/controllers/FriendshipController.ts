@@ -71,14 +71,6 @@ export class FriendshipController {
       throw new HttpError(400, "Friendship already exists");
     }
 
-    const friend = await Friendship.findOne({
-      where: { id: friendshipData.friendId },
-    });
-
-    if (!friend) {
-      throw new HttpError(404, "Friend not found");
-    }
-
     const friendship = new Friendship();
     friendship.user = user;
     friendship.friendId = friendshipData.friendId;
