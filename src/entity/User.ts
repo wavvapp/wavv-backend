@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import {
   BaseEntity,
   Column,
@@ -33,6 +34,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   profilePictureUrl: string;
 
+  @Exclude()
   @Column({ nullable: true })
   password: string;
 
@@ -45,6 +47,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   lastLogin: Date;
 
+  @Exclude()
   @Column({ nullable: true })
   resetPasswordToken: string;
 
