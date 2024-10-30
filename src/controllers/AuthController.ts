@@ -6,6 +6,7 @@ import {
   BadRequestError,
   Body,
   CurrentUser,
+  Get,
   HttpError,
   JsonController,
   Patch,
@@ -373,14 +374,20 @@ export class AuthController {
     }
 
     // check if platform is android or ios
-    if (platform !== "android" && platform !== "ios") {
+    if (platform !== "android" && platform !== "ios" && platform !== "web") {
       throw new BadRequestError("Invalid platform");
     }
 
     const ANDROID_CLIENT_ID = process.env.ANDROID_GOOGLE_CLIENT_ID;
     const IOS_CLIENT_ID = process.env.ANDROID_GOOGLE_CLIENT_ID;
+    const WEB_CLIENT_ID = process.env.WEB_GOOGLE_CLIENT_ID;
 
-    const clientId = platform === "android" ? ANDROID_CLIENT_ID : IOS_CLIENT_ID;
+    const clientId = {
+      android: ANDROID_CLIENT_ID,
+      ios: IOS_CLIENT_ID,
+      web: WEB_CLIENT_ID,
+    }[platform];
+
     const client = new OAuth2Client(clientId);
 
     const ticket = await client.verifyIdToken({
@@ -458,5 +465,10 @@ export class AuthController {
     });
 
     return { ...userData, access_token, refresh_token };
+  }
+
+  @Get("/current-user")
+  async me(@CurrentUser() user: User) {
+    return user;
   }
 }

@@ -12,7 +12,7 @@ import {
 } from "routing-controllers";
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
-import { IsNotEmpty, isNumber, IsString } from "class-validator";
+import { IsNotEmpty } from "class-validator";
 
 class CreateFriendshipDto {
   @IsNotEmpty()
@@ -24,8 +24,7 @@ class UpdateFriendshipDto {
   status: string;
 }
 
-@JsonController("/friendships")
-@Authorized()
+@JsonController("/api/friends")
 export class FriendshipController {
   @Get()
   async getAllFriendships(@CurrentUser() user: User): Promise<Friendship[]> {
