@@ -1,5 +1,5 @@
+import { IsNotEmpty } from "class-validator";
 import {
-  Authorized,
   Body,
   CurrentUser,
   Delete,
@@ -7,13 +7,12 @@ import {
   HttpError,
   JsonController,
   Param,
-  Post,
+  Post
 } from "routing-controllers";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Friendship } from "../entity/Friendship";
 import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
-import { IsNotEmpty } from "class-validator";
 
 class CreateFriendSignalDto {
   @IsNotEmpty()
@@ -23,7 +22,8 @@ class CreateFriendSignalDto {
 }
 
 @JsonController("/friend-signals")
-@Authorized()
+// TODO: Authorized needs to be handled well
+// @Authorized()
 export class FriendSignalController {
   @Get()
   async getAllFriendSignals(
