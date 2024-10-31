@@ -1,6 +1,6 @@
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { Action, UnauthorizedError } from "routing-controllers";
 import { AppUser } from "../types/Auth";
-import jwt, { JwtPayload } from "jsonwebtoken";
 
 const isValid = (payload: JwtPayload) => {
   const expiresAt = payload.exp || 0;
@@ -38,3 +38,12 @@ export const currentUserChecker = async (
       }
     });
   });
+
+export const authorizationChecker = async (action: Action, roles: string[]) => {
+  const currentUser = await currentUserChecker(action);
+  if (!currentUser) {
+    return false;
+  }
+
+  return true;
+};

@@ -1,5 +1,6 @@
 import { IsNotEmpty } from "class-validator";
 import {
+  Authorized,
   Body,
   CurrentUser,
   Delete,
@@ -23,7 +24,7 @@ class CreateFriendSignalDto {
 
 @JsonController("/friend-signals")
 // TODO: Authorized needs to be handled well
-// @Authorized()
+@Authorized()
 export class FriendSignalController {
   @Get()
   async getAllFriendSignals(
