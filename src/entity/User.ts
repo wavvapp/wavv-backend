@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
@@ -35,7 +36,8 @@ export class User extends BaseEntity {
   profilePictureUrl: string;
 
 
-  @Column({ nullable: true })
+  @Index()
+  @Column({ nullable: true, unique: true })
   username: string;
 
   @Exclude()

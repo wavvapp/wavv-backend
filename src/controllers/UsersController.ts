@@ -1,7 +1,9 @@
 import {
+  BadRequestError,
   CurrentUser,
   Get,
   JsonController,
+  Param,
   QueryParam,
 } from "routing-controllers";
 import { FindOptionsWhere, Like, Not } from "typeorm";
@@ -36,5 +38,18 @@ export class UsersController {
         email: e.email,
       };
     });
+  }
+
+  @Get(":username")
+  async updateProfile(
+    @CurrentUser({ required: true }) appUser: AppUser,
+    @Param("username") username: string
+  ) {
+    const isUsernameTaken = await User.existsBy({ username });
+    if (isUsernameTaken) return new BadRequestError("Username already taken.")
+
+    return {
+      message: "Username is available.",
+    };
   }
 }

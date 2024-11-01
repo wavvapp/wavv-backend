@@ -344,6 +344,7 @@ export class AuthController {
         );
     }
   }
+  
   @Patch("/update-profile")
   async updateProfile(
     @Body({ required: false, validate: true }) body: UpdateProfileBody,
@@ -361,12 +362,16 @@ export class AuthController {
     if (location) data.location = location;
     if (bio) data.bio = bio;
     if (profilePictureUrl) data.profilePictureUrl = profilePictureUrl;
-    if(username) data.userName = username
+    if (username) {
+      data.username = username;
+      const usernameExist = await User.existsBy({ username })
+      if(usernameExist) return new BadRequestError("Username is already taken")
+    };
 
     await User.update(appUser.id, data);
 
     return {
-      message: "Profile updated successfully",
+      message: "Profile updated successfully.",
     };
   }
 
@@ -403,10 +408,12 @@ export class AuthController {
     const payload = ticket.getPayload();
     if (!payload) throw new BadRequestError("Invalid Google token");
 
+    const username = payload["email"]?.split("@")[0]
     const userInfo = {
       email: payload["email"],
       name: payload["name"],
       picture: payload["picture"],
+      username
     };
 
     const user = await User.findOneBy({
@@ -419,6 +426,7 @@ export class AuthController {
         names: userInfo.name,
         profilePictureUrl: userInfo.picture,
         provider: "google",
+        username
       });
 
       const userData = {
@@ -430,6 +438,7 @@ export class AuthController {
         provider: newUser.provider,
         profilePictureUrl: newUser.profilePictureUrl,
         isNew: true,
+        username: newUser.username
       };
 
       // generate access and refresh tokens

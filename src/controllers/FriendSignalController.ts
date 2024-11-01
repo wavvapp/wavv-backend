@@ -22,7 +22,7 @@ class CreateFriendSignalDto {
   signalId: string;
 }
 
-@JsonController("/friend-signals")
+@JsonController("/api/friend-signals")
 // TODO: Authorized needs to be handled well
 @Authorized()
 export class FriendSignalController {
