@@ -95,6 +95,10 @@ class UpdateProfileBody {
   @IsOptional()
   @IsString()
   profilePictureUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  username?: string;
 }
 
 class GoogleSigninBody {
@@ -346,7 +350,7 @@ export class AuthController {
     @CurrentUser({ required: true }) appUser: AppUser
   ) {
     // update profile logic
-    const { names, email, phoneNumber, location, bio, profilePictureUrl } =
+    const { names, email, phoneNumber, location, bio, profilePictureUrl, username } =
       body;
 
     const data: Record<string, string | boolean> = {};
@@ -357,6 +361,7 @@ export class AuthController {
     if (location) data.location = location;
     if (bio) data.bio = bio;
     if (profilePictureUrl) data.profilePictureUrl = profilePictureUrl;
+    if(username) data.userName = username
 
     await User.update(appUser.id, data);
 
