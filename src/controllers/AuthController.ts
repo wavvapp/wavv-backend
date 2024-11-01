@@ -464,6 +464,7 @@ export class AuthController {
       emailVerified: user.emailVerified,
       provider: user.provider,
       profilePictureUrl: user.profilePictureUrl,
+      username: user.username
     };
 
     // generate access and refresh tokens
