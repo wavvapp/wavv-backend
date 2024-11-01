@@ -29,24 +29,25 @@ export class UsersController {
       where: filterObj,
     });
 
-    return users.map((e) => {
+    return users.map((user) => {
       return {
-        id: e.id,
-        name: e.names,
-        profile: e.profilePictureUrl,
-        bio: e.bio,
-        email: e.email,
+        id: user.id,
+        name: user.names,
+        profile: user.profilePictureUrl,
+        bio: user.bio,
+        email: user.email,
+        username: user.username
       };
     });
   }
 
   @Get(":username")
-  async updateProfile(
+  async getUserByUsername(
     @CurrentUser({ required: true }) appUser: AppUser,
     @Param("username") username: string
   ) {
     const isUsernameTaken = await User.existsBy({ username });
-    if (isUsernameTaken) return new BadRequestError("Username already taken.")
+    if (isUsernameTaken) return new BadRequestError("Username already exist")
 
     return {
       message: "Username is available.",
