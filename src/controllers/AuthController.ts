@@ -344,7 +344,7 @@ export class AuthController {
         );
     }
   }
-  
+
   @Patch("/update-profile")
   async updateProfile(
     @Body({ required: false, validate: true }) body: UpdateProfileBody,
@@ -408,12 +408,10 @@ export class AuthController {
     const payload = ticket.getPayload();
     if (!payload) throw new BadRequestError("Invalid Google token");
 
-    const username = payload["email"]?.split("@")[0]
     const userInfo = {
       email: payload["email"],
       name: payload["name"],
       picture: payload["picture"],
-      username
     };
 
     const user = await User.findOneBy({
@@ -426,7 +424,6 @@ export class AuthController {
         names: userInfo.name,
         profilePictureUrl: userInfo.picture,
         provider: "google",
-        username
       });
 
       const userData = {
