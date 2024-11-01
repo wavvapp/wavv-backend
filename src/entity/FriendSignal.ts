@@ -4,7 +4,7 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from "typeorm";
 import { Friendship } from "./Friendship";
 import { Signal } from "./Signal";
@@ -17,7 +17,7 @@ export class FriendSignal extends BaseEntity {
   @ManyToOne(() => Friendship)
   friendship: Friendship;
 
-  @ManyToOne(() => Signal, (signal) => signal.friendSignals)
+  @ManyToOne(() => Signal, (signal) => signal.friends)
   signal: Signal;
 
   @CreateDateColumn()
