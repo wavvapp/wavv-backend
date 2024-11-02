@@ -1,6 +1,6 @@
 {
   "branches": ["main"],
-"repositoryUrl": "https://github.com/wavvapp/wavv-backend",
+  "repositoryUrl": "https://github.com/wavvapp/wavv-backend",
   "tagFormat": "v${version}",
   "plugins": [
     "@semantic-release/commit-analyzer",
