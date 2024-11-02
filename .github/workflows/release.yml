@@ -3,6 +3,8 @@ name: Generating release
 on:
     workflow_run:
         workflows: [Deploy to production]
+        types:
+            - completed
 
 jobs:
   release:
