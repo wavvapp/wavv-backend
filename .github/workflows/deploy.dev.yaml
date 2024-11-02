@@ -1,4 +1,4 @@
-name: Develoment release
+name: Development release
 
 on:
   push:
