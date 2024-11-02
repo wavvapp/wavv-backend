@@ -7,7 +7,7 @@ import { Signal } from "./entity/Signal";
 import { User } from "./entity/User";
 
 export const MIGRATION_FILES =
-  process.env.APP_ENV === "development"
+  process.env.NODE_ENV === "development"
     ? ["./src/database/migrations/**/*.ts"]
     : ["./dist/database/migrations/**/*.js"];
 
