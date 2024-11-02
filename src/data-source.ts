@@ -1,13 +1,13 @@
 import "dotenv/config";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { User } from "./entity/User";
 import { Friendship } from "./entity/Friendship";
-import { Signal } from "./entity/Signal";
 import { FriendSignal } from "./entity/FriendSignal";
+import { Signal } from "./entity/Signal";
+import { User } from "./entity/User";
 
 export const MIGRATION_FILES =
-  process.env.NODE_ENV === "development"
+  process.env.APP_ENV === "development"
     ? ["./src/database/migrations/**/*.ts"]
     : ["./dist/database/migrations/**/*.js"];
 

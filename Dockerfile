@@ -20,10 +20,10 @@ ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 
 # Build the TypeScript code
-RUN pnpm run migration:run
+RUN pnpm run build
 
 # Build the TypeScript code
-RUN pnpm run build
+RUN pnpm run migration:run
 
 # Expose the port the app runs on
 EXPOSE 8000

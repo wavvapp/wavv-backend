@@ -2,7 +2,7 @@ name: Generating release
 
 on:
   workflow_run:
-    workflows: [Production deployment]
+    workflows: [Production release]
     types:
       - completed
 

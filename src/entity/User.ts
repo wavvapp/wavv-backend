@@ -60,6 +60,9 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   provider: string;
 
+  @Column({ default: false })
+  profileStatus: Boolean
+
   @CreateDateColumn()
   createdAt: Date;
 
