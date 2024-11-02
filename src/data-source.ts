@@ -10,7 +10,7 @@ export const MIGRATION_FILES =
   process.env.NODE_ENV === "development"
     ? ["./src/database/migrations/**/*.ts"]
     : ["./dist/database/migrations/**/*.js"];
-
+    
 export const dataSourceOptions: DataSourceOptions = {
   type: "postgres",
   url: process.env.DATABASE_URL,
