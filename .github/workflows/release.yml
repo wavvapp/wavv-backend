@@ -1,9 +1,8 @@
-name: Release
+name: Generating release
 
 on:
-  push:
-    branches:
-      - main
+    workflow_run:
+        workflows: [Deploy to production]
 
 jobs:
   release:
