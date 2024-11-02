@@ -17,8 +17,11 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install PNPM
+        run: npm i -g pnpm
+    
+      - name: Install PNPM
+        run: pnpm install
 
       - name: Release
         env:
