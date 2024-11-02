@@ -28,6 +28,6 @@ jobs:
         run: npm i -g @railway/cli
 
       - name: Deploy to Development
-        run: railway up --service a878b9d9-e826-4089-a688-577441eb2f2c
+        run: railway up
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEVELOPMENT_TOKEN }}
