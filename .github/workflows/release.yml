@@ -1,18 +1,18 @@
 name: Generating release
 
 on:
-    workflow_run:
-        workflows: [Deploy to production]
-        types:
-            - completed
+  workflow_run:
+    workflows: [Deploy to production]
+    types:
+      - completed
 
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-        contents: write
-        issues: write 
-        pull-requests: write 
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -20,11 +20,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install PNPM
         run: npm i -g pnpm
-    
+
       - name: Install dependencies
         run: pnpm install
 
