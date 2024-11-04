@@ -41,7 +41,7 @@ export class UsersController {
     });
   }
 
-  @Get(":username")
+  @Get("/:username")
   async getUserByUsername(
     @CurrentUser({ required: true }) appUser: AppUser,
     @Param("username") username: string
