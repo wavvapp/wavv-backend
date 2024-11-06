@@ -140,7 +140,7 @@ export class AuthController {
 
     // generate access and refresh tokens
     const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
-      expiresIn: "15m",
+      expiresIn: "3d",
     });
 
     const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
@@ -182,7 +182,7 @@ export class AuthController {
 
     // generate access and refresh tokens
     const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
-      expiresIn: "15m",
+      expiresIn: "3d",
     });
 
     const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
@@ -329,7 +329,7 @@ export class AuthController {
 
       // generate access and refresh tokens
       const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
-        expiresIn: "15m",
+        expiresIn: "3d",
       });
 
       const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
@@ -440,7 +440,7 @@ export class AuthController {
 
       // generate access and refresh tokens
       const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
-        expiresIn: "15m",
+        expiresIn: "3d",
       });
 
       const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
@@ -469,7 +469,7 @@ export class AuthController {
 
     // generate access and refresh tokens
     const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
-      expiresIn: "15m",
+      expiresIn: "3d",
     });
 
     const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
