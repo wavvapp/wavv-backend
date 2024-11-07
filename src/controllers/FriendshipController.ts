@@ -26,11 +26,15 @@ class UpdateFriendshipDto {
 @JsonController("/api/friends")
 export class FriendshipController {
   @Get()
-  async getAllFriendships(@CurrentUser() user: User): Promise<Friendship[]> {
-    return await Friendship.find({
+  async getAllFriendships(@CurrentUser() user: User): Promise<User[]> {
+    const friendShips = await Friendship.find({
       where: { user: { id: user.id } },
       relations: ["friend"],
     });
+
+    const friends = friendShips.map(friendShip => friendShip.friend)
+
+    return friends;
   }
 
   @Get("/:id")
