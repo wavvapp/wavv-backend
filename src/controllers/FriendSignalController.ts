@@ -10,6 +10,7 @@ import {
   Param,
   Post
 } from "routing-controllers";
+import { IsNull, Not } from "typeorm";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Friendship } from "../entity/Friendship";
 import { Signal } from "../entity/Signal";
@@ -28,34 +29,22 @@ export class FriendSignalController {
   @Get()
   async getAllFriendSignals(
     @CurrentUser() user: User
-  ): Promise<FriendSignal[]> {
-    const sharedWithUser = await FriendSignal.find({
+  ): Promise<Signal[]> {
+
+    const signal = await Signal.find({ 
+      relations: ["user"],
       where: {
+      friends: {
         friendship: {
-          friend: {
-            id: user.id
+          user: {
+            id: Not(IsNull())
           }
-        },
-      },
-      relations: {
-        friendship: true,
-        signal: true,
-      },
-    });
+        }
+      }
+    }})
 
-    const sharedByUser = await FriendSignal.find({
-      where: {
-        friendship: {
-          user: { id: user.id }
-        },
-      },
-      relations: {
-        friendship: true,
-        signal: true,
-      },
-    });
 
-    return [...sharedWithUser, ...sharedByUser];
+    return signal;
   }
 
   @Get("/friendship/:friendshipId")
