@@ -1,5 +1,5 @@
+import { IsNotEmpty } from "class-validator";
 import {
-  Authorized,
   Body,
   CurrentUser,
   Delete,
@@ -12,7 +12,6 @@ import {
 } from "routing-controllers";
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
-import { IsNotEmpty } from "class-validator";
 
 class CreateFriendshipDto {
   @IsNotEmpty()
@@ -29,7 +28,7 @@ export class FriendshipController {
   @Get()
   async getAllFriendships(@CurrentUser() user: User): Promise<Friendship[]> {
     return Friendship.find({
-      where: [{ user: { id: user.id } }, { friendId: user.id }],
+      where: [{ user: { id: user.id } }, { friend: { id: user.id } }],
       relations: ["user"],
     });
   }
@@ -48,7 +47,7 @@ export class FriendshipController {
       throw new HttpError(404, "Friendship not found");
     }
 
-    if (friendship.user.id !== user.id && friendship.friendId !== user.id) {
+    if (friendship.user.id !== user.id && friendship.friend.id !== user.id) {
       throw new HttpError(403, "Not authorized to view this friendship");
     }
 
@@ -60,10 +59,10 @@ export class FriendshipController {
     @Body() friendshipData: CreateFriendshipDto,
     @CurrentUser() user: User
   ): Promise<Friendship> {
-    const existingFriendship = await Friendship.findOne({
+    const existingFriendship = await Friendship.findOneOrFail({
       where: [
-        { user: { id: user.id }, friendId: friendshipData.friendId },
-        { user: { id: friendshipData.friendId }, friendId: user.id },
+        { user: { id: user.id }, friend: { id: friendshipData.friendId } },
+        { user: { id: friendshipData.friendId }, friend: { id: user.id } },
       ],
     });
 
@@ -71,9 +70,11 @@ export class FriendshipController {
       throw new HttpError(400, "Friendship already exists");
     }
 
+    const friend = await User.findOneByOrFail({ id: friendshipData.friendId });
+
     const friendship = new Friendship();
     friendship.user = user;
-    friendship.friendId = friendshipData.friendId;
+    friendship.friend = friend;
     friendship.status = "pending";
 
     return Friendship.save(friendship);
@@ -94,7 +95,7 @@ export class FriendshipController {
       throw new HttpError(404, "Friendship not found");
     }
 
-    if (friendship.friendId !== user.id) {
+    if (friendship.friend.id !== user.id) {
       throw new HttpError(403, "Not authorized to update this friendship");
     }
 
@@ -121,7 +122,7 @@ export class FriendshipController {
       throw new HttpError(404, "Friendship not found");
     }
 
-    if (friendship.user.id !== user.id && friendship.friendId !== user.id) {
+    if (friendship.user.id !== user.id && friendship.friend.id !== user.id) {
       throw new HttpError(403, "Not authorized to delete this friendship");
     }
 
