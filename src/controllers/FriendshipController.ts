@@ -77,7 +77,7 @@ export class FriendshipController {
     friendship.friend = friend;
     friendship.status = "pending";
 
-    return Friendship.save(friendship);
+    return await Friendship.save(friendship);
   }
 
   @Put("/:id")

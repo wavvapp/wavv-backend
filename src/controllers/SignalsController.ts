@@ -8,6 +8,7 @@ import {
   Post,
   Put,
 } from "routing-controllers";
+import { Friendship } from "../entity/Friendship";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
@@ -30,40 +31,43 @@ class UpdateSignalBody {
 export class SignalController {
   @Get("/")
   async getMyCurrentSignal(@CurrentUser() user: AppUser) {
-
-    const currentUser = await User.findOneByOrFail({
-      id: user.id
-    })
-
-    const signal = await Signal.findOne({
-      where: { user: { id: user.id } },
-      relations: ["friends.friendship.user"],
-    });
-
-    if (!signal) {
-      const newSignal = Signal.create({
-        user: currentUser,
-        status: "inactive",
-        when: "now",
-        status_message: "available",
+    try {
+      const currentUser = await User.findOneByOrFail({
+        id: user.id,
       });
-      await newSignal.save();
 
-      return { ...newSignal, friends: [] };
+      const signal = await Signal.findOne({
+        where: { user: { id: user.id } },
+        relations: ["friends.friendship.user"],
+      });
+
+      if (!signal) {
+        const newSignal = Signal.create({
+          user: currentUser,
+          status: "inactive",
+          when: "now",
+          status_message: "available",
+        });
+        await newSignal.save();
+
+        return { ...newSignal, friends: [] };
+      }
+
+      return {
+        ...signal,
+        friends: signal.friends.map((friendSignal) => {
+          return {
+            id: friendSignal.id,
+            friendId: friendSignal.friendship.id,
+            username: friendSignal.friendship.user.username,
+            names: friendSignal.friendship.user?.names,
+            profilePictureUrl: friendSignal.friendship.user?.profilePictureUrl,
+          };
+        }),
+      };
+    } catch (error) {
+      console.log(error);
     }
-    
-    return {
-      ...signal,
-      friends: signal.friends.map((friendSignal) => {
-        return {
-          id: friendSignal.id,
-          friendId: friendSignal.friendship.id,
-          username: friendSignal.friendship.user.username,
-          names: friendSignal.friendship.user?.names,
-          profilePictureUrl: friendSignal.friendship.user?.profilePictureUrl,
-        };
-      }),
-    };
   }
 
   // turn on the current signal, where we find or create a signal for the user
@@ -121,7 +125,7 @@ export class SignalController {
   // turn off the current signal
   @Put("/")
   async updateCurrentSignal(
-    @CurrentUser() user: User,
+    @CurrentUser() user: AppUser,
     @Body() body: UpdateSignalBody
   ) {
     const { friends } = body;
@@ -136,13 +140,19 @@ export class SignalController {
       throw new HttpError(404, "Signal not found");
     }
 
-    // delete all friend signals
+    // delete all friend on the signals
     await FriendSignal.delete({ signal: { id: signal.id } });
 
-    // add new friend signals
+    // add new friend to the signals
     for (const friendId of friends) {
+      const friendship = await Friendship.findOneOrFail({
+        where: [
+          { user: { id: user.id }, friend: { id: friendId } },
+          { user: { id: friendId }, friend: { id: user.id } },
+        ],
+      });
       const friendSignal = FriendSignal.create({
-        friendship: { id: friendId },
+        friendship: { id: friendship.id },
         signal: { id: signal.id },
       });
       await friendSignal.save();
