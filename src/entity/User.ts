@@ -35,7 +35,6 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   profilePictureUrl: string;
 
-
   @Index()
   @Column({ nullable: true, unique: true })
   username: string;
