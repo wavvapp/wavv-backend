@@ -27,9 +27,9 @@ class UpdateFriendshipDto {
 export class FriendshipController {
   @Get()
   async getAllFriendships(@CurrentUser() user: User): Promise<Friendship[]> {
-    return Friendship.find({
-      where: [{ user: { id: user.id } }],
-      relations: ["user"],
+    return await Friendship.find({
+      where: { user: { id: user.id } },
+      relations: ["friend"],
     });
   }
 
