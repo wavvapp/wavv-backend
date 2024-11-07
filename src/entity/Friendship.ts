@@ -17,8 +17,8 @@ export class Friendship extends BaseEntity {
   @ManyToOne(() => User, (user) => user.friendships)
   user: User;
 
-  @Column()
-  friendId: string;
+  @ManyToOne(() => User, (user) => user.friendships)
+  friend: User;
 
   @Column()
   status: string;

@@ -31,13 +31,12 @@ export class UsersController {
     });
 
     const friends = await Friendship.find({
-      select: { friendId: true },
       where: {
         user: { id: appUser.id },
       },
     });
 
-    const friendIds = friends.map((friend) => friend.friendId);
+    const friendIds = friends.map((friend) => friend.friend.id);
 
     return users.map((user) => ({
       id: user.id,

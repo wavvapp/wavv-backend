@@ -23,7 +23,6 @@ class CreateFriendSignalDto {
 }
 
 @JsonController("/api/friend-signals")
-// TODO: Authorized needs to be handled well
 @Authorized()
 export class FriendSignalController {
   @Get()
@@ -33,8 +32,9 @@ export class FriendSignalController {
     const sharedWithUser = await FriendSignal.find({
       where: {
         friendship: {
-          friendId: user.id,
-          status: "accepted",
+          friend: {
+            id: user.id
+          }
         },
       },
       relations: {
@@ -46,8 +46,7 @@ export class FriendSignalController {
     const sharedByUser = await FriendSignal.find({
       where: {
         friendship: {
-          user: { id: user.id },
-          status: "accepted",
+          user: { id: user.id }
         },
       },
       relations: {
@@ -73,7 +72,7 @@ export class FriendSignalController {
       throw new HttpError(404, "Friendship not found");
     }
 
-    if (friendship.user.id !== user.id && friendship.friendId !== user.id) {
+    if (friendship.user.id !== user.id && friendship.friend.id !== user.id) {
       throw new HttpError(403, "Not authorized to view these signals");
     }
 
@@ -99,7 +98,7 @@ export class FriendSignalController {
 
     if (
       friendSignal.friendship.user.id !== user.id &&
-      friendSignal.friendship.friendId !== user.id
+      friendSignal.friendship.friend.id !== user.id
     ) {
       throw new HttpError(403, "Not authorized to view this signal");
     }
@@ -175,7 +174,7 @@ export class FriendSignalController {
 
     if (
       friendSignal.friendship.user.id !== user.id &&
-      friendSignal.friendship.friendId !== user.id
+      friendSignal.friendship.friend.id !== user.id
     ) {
       throw new HttpError(403, "Not authorized to delete this signal share");
     }
