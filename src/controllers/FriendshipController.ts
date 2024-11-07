@@ -28,7 +28,7 @@ export class FriendshipController {
   @Get()
   async getAllFriendships(@CurrentUser() user: User): Promise<Friendship[]> {
     return Friendship.find({
-      where: [{ user: { id: user.id } }, { friend: { id: user.id } }],
+      where: [{ user: { id: user.id } }],
       relations: ["user"],
     });
   }
