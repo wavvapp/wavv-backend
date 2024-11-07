@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsString, MaxLength } from "class-validator";
 import {
   Body,
   CurrentUser,
@@ -7,10 +8,10 @@ import {
   Post,
   Put,
 } from "routing-controllers";
-import { User } from "../entity/User";
-import { Signal } from "../entity/Signal";
 import { FriendSignal } from "../entity/FriendSignal";
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { Signal } from "../entity/Signal";
+import { User } from "../entity/User";
+import { AppUser } from "../types/Auth";
 
 class UpdateSignalBody {
   @MaxLength(100, {
@@ -28,14 +29,20 @@ class UpdateSignalBody {
 @JsonController("/api/my-signal")
 export class SignalController {
   @Get("/")
-  async getMyCurrentSignal(@CurrentUser() user: User) {
+  async getMyCurrentSignal(@CurrentUser() user: AppUser) {
+
+    const currentUser = await User.findOneByOrFail({
+      id: user.id
+    })
+
     const signal = await Signal.findOne({
       where: { user: { id: user.id } },
       relations: ["friends.friendship.user"],
     });
+
     if (!signal) {
       const newSignal = Signal.create({
-        user: { id: user.id },
+        user: currentUser,
         status: "inactive",
         when: "now",
         status_message: "available",
@@ -44,17 +51,16 @@ export class SignalController {
 
       return { ...newSignal, friends: [] };
     }
+    
     return {
       ...signal,
       friends: signal.friends.map((friendSignal) => {
         return {
           id: friendSignal.id,
           friendId: friendSignal.friendship.id,
-          // @ts-ignore
-          username: friendSignal.friendship.user?.["username"] || "",
-          names: friendSignal.friendship.user?.names || "",
-          profilePictureUrl:
-            friendSignal.friendship.user?.profilePictureUrl || "",
+          username: friendSignal.friendship.user.username,
+          names: friendSignal.friendship.user?.names,
+          profilePictureUrl: friendSignal.friendship.user?.profilePictureUrl,
         };
       }),
     };
@@ -159,11 +165,9 @@ export class SignalController {
         return {
           id: friendSignal.id,
           friendId: friendSignal.friendship.id,
-          // @ts-ignore
-          username: friendSignal.friendship.user?.["username"] || "",
-          names: friendSignal.friendship.user?.names || "",
-          profilePictureUrl:
-            friendSignal.friendship.user?.profilePictureUrl || "",
+          username: friendSignal.friendship.user.username,
+          names: friendSignal.friendship.user.names,
+          profilePictureUrl: friendSignal.friendship.user.profilePictureUrl,
         };
       }),
     };
