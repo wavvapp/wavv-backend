@@ -59,7 +59,7 @@ export class FriendshipController {
     @Body() friendshipData: CreateFriendshipDto,
     @CurrentUser() user: User
   ): Promise<Friendship> {
-    const existingFriendship = await Friendship.findOneOrFail({
+    const existingFriendship = await Friendship.findOne({
       where: [
         { user: { id: user.id }, friend: { id: friendshipData.friendId } },
         { user: { id: friendshipData.friendId }, friend: { id: user.id } },
