@@ -388,9 +388,9 @@ export class AuthController {
       throw new BadRequestError("Invalid platform");
     }
 
-    const ANDROID_CLIENT_ID = process.env.ANDROID_GOOGLE_CLIENT_ID;
-    const IOS_CLIENT_ID = process.env.ANDROID_GOOGLE_CLIENT_ID;
+    const ANDROID_CLIENT_ID = process.env.WEB_GOOGLE_CLIENT_ID;
     const WEB_CLIENT_ID = process.env.WEB_GOOGLE_CLIENT_ID;
+    const IOS_CLIENT_ID = process.env.IOS_GOOGLE_CLIENT_ID;
 
     const clientId = {
       android: ANDROID_CLIENT_ID,
