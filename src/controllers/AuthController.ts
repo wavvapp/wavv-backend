@@ -489,6 +489,6 @@ export class AuthController {
 
   @Get("/current-user")
   async me(@CurrentUser() user: User) {
-    return user;
+    return await User.findOneByOrFail({ id: user.id});
   }
 }
