@@ -11,13 +11,14 @@ import { AuthController } from "./controllers/AuthController";
 import { FriendSignalController } from "./controllers/FriendSignalController";
 import { FriendshipController } from "./controllers/FriendshipController";
 import { HomeController } from "./controllers/HomeController";
+import { PointsController } from "./controllers/PointsController";
+import { SignalController } from "./controllers/SignalsController";
 import { UsersController } from "./controllers/UsersController";
 import {
   authorizationChecker,
   currentUserChecker,
 } from "./middlewares/authorization";
 import { ErrorHandler } from "./middlewares/errorHandler";
-import { SignalController } from "./controllers/SignalsController";
 
 const swaggerUi = require("swagger-ui-express");
 const app = express();
@@ -33,6 +34,7 @@ const options: RoutingControllersOptions = {
     FriendSignalController,
     FriendshipController,
     SignalController,
+    PointsController,
   ],
 };
 

@@ -1,7 +1,6 @@
 import "dotenv/config";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { PointsController } from "./controllers/PointsController";
 import { Friendship } from "./entity/Friendship";
 import { FriendSignal } from "./entity/FriendSignal";
 import { Signal } from "./entity/Signal";
@@ -17,7 +16,7 @@ export const dataSourceOptions: DataSourceOptions = {
   url: process.env.DATABASE_URL,
   migrationsTransactionMode: "each",
   namingStrategy: new SnakeNamingStrategy(),
-  entities: [User, Friendship, Signal, FriendSignal, PointsController],
+  entities: [User, Friendship, Signal, FriendSignal],
   migrationsRun: false,
   migrations: MIGRATION_FILES,
   synchronize: false,
