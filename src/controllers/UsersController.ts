@@ -30,13 +30,14 @@ export class UsersController {
       where: filterObj,
     });
 
-    const friends = await Friendship.find({
+    const friendships = await Friendship.find({
+      relations: ["friend"],
       where: {
         user: { id: appUser.id },
       },
     });
 
-    const friendIds = friends.map((friend) => friend.friend.id);
+    const friendIds = friendships.map((friendship) => friendship.friend.id);
 
     return users.map((user) => ({
       id: user.id,

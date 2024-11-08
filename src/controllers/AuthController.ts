@@ -442,7 +442,8 @@ export class AuthController {
         provider: newUser.provider,
         profilePictureUrl: newUser.profilePictureUrl,
         isNew: true,
-        username: newUser.username
+        username: newUser.username,
+        points: 0,
       };
 
       // generate access and refresh tokens

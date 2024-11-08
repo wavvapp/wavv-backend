@@ -8,41 +8,58 @@ class PointsServices {
   }
 
   async initWavvUserICPIdentity(id: string) {
-    const response = await axios.post(this.USER_ENDPOINT, {
-      data: { id, points: 0 },
-    });
-    return response.data;
+    //TODO: CANNISTER RESPONSE ERRORS
+    try {
+      const response = await axios.post(this.USER_ENDPOINT, {
+        id,
+        points: 0,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async getPointsByUserId(id: string) {
-    const response = await axios.get(`${this.USER_ENDPOINT}/${id}`);
-    return response.data;
+    //TODO: CANNISTER RESPONSE ERRORS
+    try {
+      const response = await axios.get(`${this.USER_ENDPOINT}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async insreaseUserPoints(id: string, points: number) {
-    const response = await axios.post(
-      `${this.USER_ENDPOINT}/${id}/increase`,
-      {
-        data: {
+    //TODO: CANNISTER RESPONSE ERRORS
+    try {
+      const response = await axios.post(
+        `${this.USER_ENDPOINT}/${id}/increase`,
+        {
           id,
           points,
-        },
-      }
-    );
-    return response.data;
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async decreaseUserPoints(id: string) {
-    const response = await axios.post(
-      `${this.USER_ENDPOINT}/${id}/decrease`,
-      {
-        data: {
+    //TODO: CANNISTER RESPONSE ERRORS
+    try {
+      const response = await axios.post(
+        `${this.USER_ENDPOINT}/${id}/decrease`,
+        {
           id,
-        },
-      }
-    );
-    return response.data;
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
-export default PointsServices
+export default PointsServices;
