@@ -66,7 +66,6 @@ export class FriendshipController {
     const existingFriendship = await Friendship.findOne({
       where: [
         { user: { id: user.id }, friend: { id: friendshipData.friendId } },
-        { user: { id: friendshipData.friendId }, friend: { id: user.id } },
       ],
     });
 
