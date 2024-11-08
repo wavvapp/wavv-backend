@@ -16,6 +16,7 @@
     "migration:revert": "npx typeorm-ts-node-commonjs  migration:revert -d ./src/data-source.ts"
   },
   "dependencies": {
+    "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "class-validator": "^0.14.1",
     "class-validator-jsonschema": "^5.0.1",
@@ -36,9 +37,8 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.0.3",
-    "semantic-release": "^24.2.0",
-    "@semantic-release/exec": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^11.0.0",
     "@semantic-release/release-notes-generator": "^14.0.1",
@@ -48,6 +48,7 @@
     "@types/node": "^16.11.12",
     "class-transformer": "^0.5.1",
     "nodemon": "^2.0.15",
+    "semantic-release": "^24.2.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^1.1.8",
     "typescript": "^5.6.2"

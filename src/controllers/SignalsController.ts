@@ -8,10 +8,12 @@ import {
   Post,
   Put,
 } from "routing-controllers";
+import { ACTIVITY_FRIENDS_POINTS } from "../constants/points";
 import { Friendship } from "../entity/Friendship";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
+import PointsServices from "../service/PointsServices";
 import { AppUser } from "../types/Auth";
 
 class UpdateSignalBody {
@@ -168,6 +170,10 @@ export class SignalController {
       where: { user: { id: user.id } },
       relations: ["friends.friendship.user"],
     });
+
+
+    const pointsService = new PointsServices();
+    await pointsService.insreaseUserPoints(user.id, friends.length * ACTIVITY_FRIENDS_POINTS);
 
     return {
       ...newSignal,

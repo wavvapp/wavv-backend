@@ -12,7 +12,9 @@ import {
   Patch,
   Post,
 } from "routing-controllers";
+import { USERNAME_UPDATE_POINTS } from "../constants/points";
 import { User } from "../entity/User";
+import PointsServices from "../service/PointsServices";
 import type { AppUser } from "../types/Auth";
 
 class LoginBody {
@@ -366,6 +368,8 @@ export class AuthController {
       data.username = username;
       const usernameExist = await User.existsBy({ username })
       if(usernameExist) return new BadRequestError("Username is already taken")
+      const pointsService = new PointsServices();
+      await pointsService.insreaseUserPoints(appUser.id, USERNAME_UPDATE_POINTS);
     };
 
     await User.update(appUser.id, data);
@@ -425,6 +429,9 @@ export class AuthController {
         profilePictureUrl: userInfo.picture,
         provider: "google",
       });
+
+      const pointsService = new PointsServices();
+      await pointsService.initWavvUserICPIdentity(newUser.id);
 
       const userData = {
         id: newUser.id,
