@@ -40,12 +40,7 @@ export class UsersController {
     const friendIds = friendships.map((friendship) => friendship.friend.id);
 
     return users.map((user) => ({
-      id: user.id,
-      name: user.names,
-      profile: user.profilePictureUrl,
-      bio: user.bio,
-      email: user.email,
-      username: user.username,
+      ...user,
       isFriend: friendIds.includes(user.id),
     }));
   }
