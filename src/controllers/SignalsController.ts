@@ -150,7 +150,6 @@ export class SignalController {
       const friendship = await Friendship.findOneOrFail({
         where: [
           { user: { id: user.id }, friend: { id: friendId } },
-          { user: { id: friendId }, friend: { id: user.id } },
         ],
       });
       const friendSignal = FriendSignal.create({
@@ -173,17 +172,16 @@ export class SignalController {
 
 
     const pointsService = new PointsServices();
-    await pointsService.insreaseUserPoints(user.id, friends.length * ACTIVITY_FRIENDS_POINTS);
+    pointsService.insreaseUserPoints(user.id, friends.length * ACTIVITY_FRIENDS_POINTS);
 
     return {
       ...newSignal,
-      friends: newSignal?.friends.map((friendSignal) => {
+      friends: newSignal?.friends.map((signal) => {
         return {
-          id: friendSignal.id,
-          friendId: friendSignal.friendship.id,
-          username: friendSignal.friendship.user.username,
-          names: friendSignal.friendship.user.names,
-          profilePictureUrl: friendSignal.friendship.user.profilePictureUrl,
+          friendId: signal.friendship.user.id,
+          username: signal.friendship.user.username,
+          names: signal.friendship.user.names,
+          profilePictureUrl: signal.friendship.user.profilePictureUrl,
         };
       }),
     };

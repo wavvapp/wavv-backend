@@ -108,7 +108,7 @@ export class FriendshipController {
     }
 
     friendship.status = updateData.status;
-    return Friendship.save(friendship);
+    return await Friendship.save(friendship);
   }
 
   @Delete("/:id")

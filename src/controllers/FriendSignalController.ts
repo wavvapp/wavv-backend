@@ -65,7 +65,7 @@ export class FriendSignalController {
       throw new HttpError(403, "Not authorized to view these signals");
     }
 
-    return FriendSignal.find({
+    return await FriendSignal.find({
       where: { friendship: { id: friendshipId } },
       relations: ["signal", "friendship"],
     });
@@ -144,7 +144,7 @@ export class FriendSignalController {
     friendSignal.friendship = friendship;
     friendSignal.signal = signal;
 
-    return FriendSignal.save(friendSignal);
+    return await FriendSignal.save(friendSignal);
   }
 
   @Delete("/:id")
