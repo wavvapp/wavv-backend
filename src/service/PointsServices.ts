@@ -1,9 +1,13 @@
 import axios from "axios";
 
 class PointsServices {
-  private readonly USER_ENDPOINT = this.cannisterClien("/users");
+  private USER_ENDPOINT = this.cannisterClient("/users");
 
-  private cannisterClien(path: string) {
+  constructor(version?: "v2") {
+    if (version) this.USER_ENDPOINT = this.cannisterClient(`/${version}/users`)
+  }
+
+  private cannisterClient(path: string) {
     return `${process.env.POINTS_CANISTER_BASE_URL}${path}`;
   }
 

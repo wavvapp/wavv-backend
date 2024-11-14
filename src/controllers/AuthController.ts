@@ -370,6 +370,9 @@ export class AuthController {
       if(usernameExist) return new BadRequestError("Username is already taken")
       const pointsService = new PointsServices();
       await pointsService.insreaseUserPoints(appUser.id, USERNAME_UPDATE_POINTS);
+
+      const pointsServiceV2 = new PointsServices("v2");
+      await pointsServiceV2.insreaseUserPoints(appUser.id, USERNAME_UPDATE_POINTS);
     };
 
     await User.update(appUser.id, data);

@@ -174,6 +174,9 @@ export class SignalController {
     const pointsService = new PointsServices();
     pointsService.insreaseUserPoints(user.id, friends.length * ACTIVITY_FRIENDS_POINTS);
 
+    const pointsServiceV2 = new PointsServices("v2");
+    pointsServiceV2.insreaseUserPoints(user.id, friends.length * ACTIVITY_FRIENDS_POINTS);
+
     return {
       ...newSignal,
       friends: newSignal?.friends.map((signal) => {
