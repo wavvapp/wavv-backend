@@ -123,12 +123,8 @@ export class SignalController {
     @Body() body: UpdateSignalBody
   ) {
     const { friends } = body;
-    let signal;
-    try {
-      signal = await Signal.findOneBy({ user: { id: user.id } });
-    } catch (error) {
-      throw new HttpError(500, "Error finding signal");
-    }
+    const signal = await Signal.findOneBy({ user: { id: user.id } });;
+    
 
     if (!signal) {
       throw new HttpError(404, "Signal not found");

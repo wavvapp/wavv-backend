@@ -22,6 +22,7 @@ class PointsServices {
 
   async getPointsByUserId(id: string) {
     //TODO: CANNISTER RESPONSE ERRORS
+    await this.initWavvUserICPIdentity(id)
     try {
       const response = await axios.get(`${this.USER_ENDPOINT}/${id}`);
       return response.data;
@@ -32,13 +33,13 @@ class PointsServices {
        * If user does not exist on the canister we create the user them with 0 points.
        * 
       */
-      this.initWavvUserICPIdentity(id)
       return { id, points: 0 };
     }
   }
 
   async insreaseUserPoints(id: string, points: number) {
     //TODO: CANNISTER RESPONSE ERRORS
+    await this.initWavvUserICPIdentity(id)
     try {
       const response = await axios.post(
         `${this.USER_ENDPOINT}/${id}/increase`,
@@ -55,6 +56,7 @@ class PointsServices {
 
   async decreaseUserPoints(id: string) {
     //TODO: CANNISTER RESPONSE ERRORS
+    await this.initWavvUserICPIdentity(id)
     try {
       const response = await axios.post(
         `${this.USER_ENDPOINT}/${id}/decrease`,
