@@ -25,22 +25,35 @@ class CreateFriendSignalDto {
 @JsonController("/api/friend-signals")
 @Authorized()
 export class FriendSignalController {
-  @Get()
-  async getAllFriendSignals(@CurrentUser() user: User): Promise<Signal[]> {
-    const signal = await Signal.find({
-      relations: ["friendSignal.friendship.friend"],
+  @Get("/")
+  async getAllFriendSignals(@CurrentUser() user: User): Promise<any[]> {
+    const friendsSignals = await Friendship.find({
+      relations: ["user", "friendSignal.signal"],
       where: {
         friendSignal: {
           friendship: {
-            user: {
-              id: user.id,
-            },
-          },
-        },
+            friend: {
+              id: user.id
+            }
+          }
+        }
       },
     });
 
-    return signal;
+
+    const friendSignals = friendsSignals.map( signal => {
+      const friendSignal = signal.friendSignal;
+      const user = {
+        id: signal.user.id,
+        username:  signal.user.username,
+        email: signal.user.email,
+        profilePictureUrl: signal.user.profilePictureUrl,
+        names: signal.user.names
+      }
+      return { ...user, signal: friendSignal[0]?.signal || {} };
+    })
+     
+    return friendSignals;
   }
 
   @Get("/friendship/:friendshipId")

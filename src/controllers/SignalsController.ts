@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString, MaxLength } from "class-validator";
 import {
+  BadRequestError,
   Body,
   CurrentUser,
   Get,
@@ -34,39 +35,30 @@ export class SignalController {
   @Get("/")
   async getMyCurrentSignal(@CurrentUser() user: AppUser) {
     try {
-      const currentUser = await User.findOneByOrFail({
-        id: user.id,
-      });
-
-      const signal = await Signal.findOne({
+      const signal = await Signal.findOneOrFail({
         where: { user: { id: user.id } },
-        relations: ["friendSignal.friendship.user"],
+        relations: ["friendSignal.friendship.friend"],
       });
 
-      if (!signal) {
-        const newSignal = Signal.create({
-          user: currentUser,
-          status: "inactive",
-          when: "now",
-          status_message: "available",
-        });
-        await newSignal.save();
-
-        return { ...newSignal, friends: [] };
+      if(!signal) {
+        return new BadRequestError("You don't have any active signal")
       }
 
-      return {
+      const mySignal = {
         ...signal,
         friends: signal.friendSignal.map((friendSignal) => {
           return {
-            id: friendSignal.id,
-            friendId: friendSignal.friendship.id,
-            username: friendSignal.friendship.user.username,
-            names: friendSignal.friendship.user?.names,
-            profilePictureUrl: friendSignal.friendship.user?.profilePictureUrl,
+            friendId: friendSignal.friendship.friend.id,
+            username: friendSignal.friendship.friend.username,
+            names: friendSignal.friendship.friend.names,
+            profilePictureUrl: friendSignal.friendship.friend?.profilePictureUrl,
           };
         }),
       };
+
+       mySignal.friendSignal = []
+
+      return mySignal;
     } catch (error) {
       console.log(error);
     }
@@ -178,10 +170,10 @@ export class SignalController {
       ...newSignal,
       friends: newSignal?.friendSignal.map((signal) => {
         return {
-          friendId: signal.friendship.user.id,
-          username: signal.friendship.user.username,
-          names: signal.friendship.user.names,
-          profilePictureUrl: signal.friendship.user.profilePictureUrl,
+          friendId: signal.friendship.friend.id,
+          username: signal.friendship.friend.username,
+          names: signal.friendship.friend.names,
+          profilePictureUrl: signal.friendship.friend.profilePictureUrl,
         };
       }),
     };

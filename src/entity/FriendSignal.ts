@@ -14,7 +14,7 @@ export class FriendSignal extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => Friendship)
+  @ManyToOne(() => Friendship, friendship => friendship.friendSignal )
   friendship: Friendship;
 
   @ManyToOne(() => Signal, (signal) => signal.friendSignal)
