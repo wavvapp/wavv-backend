@@ -8,7 +8,7 @@ import {
   HttpError,
   JsonController,
   Param,
-  Post
+  Post,
 } from "routing-controllers";
 import { IsNull, Not } from "typeorm";
 import { FriendSignal } from "../entity/FriendSignal";
@@ -27,22 +27,19 @@ class CreateFriendSignalDto {
 @Authorized()
 export class FriendSignalController {
   @Get()
-  async getAllFriendSignals(
-    @CurrentUser() user: User
-  ): Promise<Signal[]> {
-
-    const signal = await Signal.find({ 
+  async getAllFriendSignals(@CurrentUser() user: User): Promise<Signal[]> {
+    const signal = await Signal.find({
       relations: ["user"],
       where: {
-      friends: {
-        friendship: {
-          user: {
-            id: Not(IsNull())
-          }
-        }
-      }
-    }})
-
+        friends: {
+          friendship: {
+            user: {
+              id: user.id,
+            },
+          },
+        },
+      },
+    });
 
     return signal;
   }
