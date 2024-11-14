@@ -40,7 +40,7 @@ export class SignalController {
 
       const signal = await Signal.findOne({
         where: { user: { id: user.id } },
-        relations: ["friends.friendship.friend"],
+        relations: ["friends.friendship.user"],
       });
 
       if (!signal) {
