@@ -26,7 +26,14 @@ class PointsServices {
       const response = await axios.get(`${this.USER_ENDPOINT}/${id}`);
       return response.data;
     } catch (error) {
-      console.error(error);
+
+      /**
+       * 
+       * If user does not exist on the canister we create the user them with 0 points.
+       * 
+      */
+      this.initWavvUserICPIdentity(id)
+      return { id, points: 0 };
     }
   }
 
