@@ -35,5 +35,5 @@ export class Signal extends BaseEntity {
   updatedAt: Date;
 
   @OneToMany(() => FriendSignal, (friendSignal) => friendSignal.signal)
-  friends: FriendSignal[];
+  friendSignal: FriendSignal[];
 }

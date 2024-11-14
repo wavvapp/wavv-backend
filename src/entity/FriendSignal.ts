@@ -17,7 +17,7 @@ export class FriendSignal extends BaseEntity {
   @ManyToOne(() => Friendship)
   friendship: Friendship;
 
-  @ManyToOne(() => Signal, (signal) => signal.friends)
+  @ManyToOne(() => Signal, (signal) => signal.friendSignal)
   signal: Signal;
 
   @CreateDateColumn()

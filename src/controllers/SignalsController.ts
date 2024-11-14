@@ -40,7 +40,7 @@ export class SignalController {
 
       const signal = await Signal.findOne({
         where: { user: { id: user.id } },
-        relations: ["friends.friendship.user"],
+        relations: ["friendSignal.friendship.user"],
       });
 
       if (!signal) {
@@ -57,7 +57,7 @@ export class SignalController {
 
       return {
         ...signal,
-        friends: signal.friends.map((friendSignal) => {
+        friends: signal.friendSignal.map((friendSignal) => {
           return {
             id: friendSignal.id,
             friendId: friendSignal.friendship.id,
@@ -167,7 +167,7 @@ export class SignalController {
     // fetch friend signals
     const newSignal = await Signal.findOne({
       where: { user: { id: user.id } },
-      relations: ["friends.friendship.user"],
+      relations: ["friendSignal.friendship.user"],
     });
 
 
@@ -176,7 +176,7 @@ export class SignalController {
 
     return {
       ...newSignal,
-      friends: newSignal?.friends.map((signal) => {
+      friends: newSignal?.friendSignal.map((signal) => {
         return {
           friendId: signal.friendship.user.id,
           username: signal.friendship.user.username,
