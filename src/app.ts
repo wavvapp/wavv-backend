@@ -23,7 +23,6 @@ import EntityNotFoundHandler from "./middlewares/EntityNotFoundHandler";
 import { ErrorHandler } from "./middlewares/errorHandler";
 
 const app = express();
-
 const options: RoutingControllersOptions = {
   currentUserChecker,
   authorizationChecker,
@@ -37,6 +36,7 @@ const options: RoutingControllersOptions = {
     SignalController,
     PointsController,
   ],
+  cors: true
 };
 
 useExpressServer(app, options);
