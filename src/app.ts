@@ -36,7 +36,7 @@ const options: RoutingControllersOptions = {
     SignalController,
     PointsController,
   ],
-  cors: true
+  cors: true,
 };
 
 useExpressServer(app, options);
