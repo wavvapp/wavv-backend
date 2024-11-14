@@ -56,7 +56,7 @@ export class SignalController {
         }),
       };
 
-       mySignal.friendSignal = []
+      mySignal.friendSignal = []
 
       return mySignal;
     } catch (error) {
@@ -153,25 +153,31 @@ export class SignalController {
     await signal.save();
 
     // fetch friend signals
-    const newSignal = await Signal.findOne({
+    const newSignal = await Signal.findOneOrFail({
       where: { user: { id: user.id } },
-      relations: ["friendSignal.friendship.user"],
+      relations: ["friendSignal.friendship.friend"],
     });
 
 
     const pointsService = new PointsServices();
     pointsService.insreaseUserPoints(user.id, friends.length * ACTIVITY_FRIENDS_POINTS);
 
-    return {
+
+    
+    const mySignal = {
       ...newSignal,
-      friends: newSignal?.friendSignal.map((signal) => {
+      friends: newSignal.friendSignal.map((friendSignal) => {
         return {
-          friendId: signal.friendship.friend.id,
-          username: signal.friendship.friend.username,
-          names: signal.friendship.friend.names,
-          profilePictureUrl: signal.friendship.friend.profilePictureUrl,
+          friendId: friendSignal.friendship.friend.id,
+          username: friendSignal.friendship.friend.username,
+          names: friendSignal.friendship.friend.names,
+          profilePictureUrl: friendSignal.friendship.friend?.profilePictureUrl,
         };
       }),
     };
+
+    mySignal.friendSignal = []
+
+    return mySignal;
   }
 }
