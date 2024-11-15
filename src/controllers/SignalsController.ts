@@ -44,6 +44,18 @@ export class SignalController {
         return new BadRequestError("You don't have any active signal")
       }
 
+      if (!signal) {
+        const currentUser =  await User.findOneByOrFail({ id: user.id });
+        const newSignal = Signal.create({
+          user: currentUser,
+          status: "inactive",
+          when: "now",
+          status_message: "available",
+        });
+        await newSignal.save();
+        return { ...newSignal, friends: [] };
+      }
+      
       const mySignal = {
         ...signal,
         friends: signal.friendSignal.map((friendSignal) => {
