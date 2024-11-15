@@ -1,13 +1,12 @@
 import { IsNotEmpty, IsString, MaxLength } from "class-validator";
 import {
-  BadRequestError,
   Body,
   CurrentUser,
   Get,
   HttpError,
   JsonController,
   Post,
-  Put,
+  Put
 } from "routing-controllers";
 import { ACTIVITY_FRIENDS_POINTS } from "../constants/points";
 import { Friendship } from "../entity/Friendship";
@@ -35,14 +34,10 @@ export class SignalController {
   @Get("/")
   async getMyCurrentSignal(@CurrentUser() user: AppUser) {
     try {
-      const signal = await Signal.findOneOrFail({
+      const signal = await Signal.findOne({
         where: { user: { id: user.id } },
         relations: ["friendSignal.friendship.friend"],
       });
-
-      if(!signal) {
-        return new BadRequestError("You don't have any active signal")
-      }
 
       if (!signal) {
         const currentUser =  await User.findOneByOrFail({ id: user.id });
@@ -55,7 +50,7 @@ export class SignalController {
         await newSignal.save();
         return { ...newSignal, friends: [] };
       }
-      
+
       const mySignal = {
         ...signal,
         friends: signal.friendSignal.map((friendSignal) => {
