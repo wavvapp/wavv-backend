@@ -9,7 +9,6 @@ class PointsServices {
 
   async initWavvUserICPIdentity(id: string) {
     //TODO: CANNISTER RESPONSE ERRORS
-    await this.initWavvUserICPIdentity(id)
     try {
       const response = await axios.post(this.USER_ENDPOINT, {
         userId: id,
