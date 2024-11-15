@@ -20,19 +20,24 @@ class PointsServices {
     }
   }
 
-  async getPointsByUserId(id: string) {
+  async getPointsByUserId(id:string) {
     //TODO: CANNISTER RESPONSE ERRORS
     try {
       const response = await axios.get(`${this.USER_ENDPOINT}/${id}`);
       return response.data;
     } catch (error) {
 
-      /**
-       * 
-       * If user does not exist on the canister we create the user them with 0 points.
-       * 
-      */
-      await this.initWavvUserICPIdentity(id)
+      this.initWavvUserICPIdentity(id)
+      return { id, points: 0 };
+    }
+  }
+
+  async getPointsByPrincipal(id:string, principal: string) {
+    //TODO: CANNISTER RESPONSE ERRORS
+    try {
+      const response = await axios.get(`v2/${this.USER_ENDPOINT}/${principal}`);
+      return response.data;
+    } catch (error) {
       return { id, points: 0 };
     }
   }

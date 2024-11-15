@@ -107,7 +107,11 @@ class GoogleSigninBody {
   @IsNotEmpty()
   @IsString()
   token: string;
-  platform: string;
+
+  platform: "web" | "android" | "ios";
+
+  @IsOptional()
+  principal?: string;
 }
 
 @JsonController("/api/auth")
@@ -151,6 +155,7 @@ export class AuthController {
 
     return { ...userData, access_token, refresh_token };
   }
+
   @Post("/register")
   async register(
     @Body({ required: false, validate: true }) body: RegisterBody
@@ -193,6 +198,7 @@ export class AuthController {
 
     return { ...userData, access_token, refresh_token };
   }
+
   @Post("/forgot-password")
   async forgotPassword(
     @Body({ required: false, validate: true }) body: ForgotPasswordBody
@@ -224,6 +230,7 @@ export class AuthController {
       message: "Password reset link sent to your email",
     };
   }
+
   @Post("/reset-password")
   async resetPassword(
     @Body({ required: false, validate: true }) body: ResetPasswordBody
@@ -266,6 +273,7 @@ export class AuthController {
         );
     }
   }
+
   @Post("/change-password")
   async changePassword(
     @Body({ required: false, validate: true }) body: ChangePasswordBody,
@@ -299,6 +307,7 @@ export class AuthController {
       message: "Password changed successfully",
     };
   }
+
   @Post("/refresh-token")
   async refreshToken(
     @Body({ required: false, validate: true }) body: RefreshTokenBody
@@ -353,8 +362,15 @@ export class AuthController {
     @CurrentUser({ required: true }) appUser: AppUser
   ) {
     // update profile logic
-    const { names, email, phoneNumber, location, bio, profilePictureUrl, username } =
-      body;
+    const {
+      names,
+      email,
+      phoneNumber,
+      location,
+      bio,
+      profilePictureUrl,
+      username,
+    } = body;
 
     const data: Record<string, string | boolean> = {};
 
@@ -366,11 +382,15 @@ export class AuthController {
     if (profilePictureUrl) data.profilePictureUrl = profilePictureUrl;
     if (username) {
       data.username = username;
-      const usernameExist = await User.existsBy({ username })
-      if(usernameExist) return new BadRequestError("Username is already taken")
+      const usernameExist = await User.existsBy({ username });
+      if (usernameExist)
+        return new BadRequestError("Username is already taken");
       const pointsService = new PointsServices();
-      await pointsService.insreaseUserPoints(appUser.id, USERNAME_UPDATE_POINTS);
-    };
+      await pointsService.insreaseUserPoints(
+        appUser.id,
+        USERNAME_UPDATE_POINTS
+      );
+    }
 
     await User.update(appUser.id, data);
 
@@ -388,7 +408,7 @@ export class AuthController {
     }
 
     // check if platform is android or ios
-    if (platform !== "android" && platform !== "ios" && platform !== "web") {
+    if (!["android", "ios", "web"].includes(platform)) {
       throw new BadRequestError("Invalid platform");
     }
 
@@ -412,23 +432,23 @@ export class AuthController {
     const payload = ticket.getPayload();
     if (!payload) throw new BadRequestError("Invalid Google token");
 
-    const userInfo = {
-      email: payload["email"],
-      name: payload["name"],
-      picture: payload["picture"],
-    };
-
     const user = await User.findOneBy({
-      email: userInfo.email,
+      email: payload.email,
     });
 
     if (!user) {
-      const newUser = await User.save({
-        email: userInfo.email,
-        names: userInfo.name,
-        profilePictureUrl: userInfo.picture,
-        provider: "google",
-      });
+      const newUser = new User();
+
+      if (!payload.email) throw new BadRequestError("Email is required");
+
+      newUser.email = payload.email || "";
+      newUser.names = payload.name || "";
+      newUser.profilePictureUrl = payload.picture || "";
+      newUser.provider = "google";
+
+      if (body.principal) newUser.principal = body.principal;
+
+      await newUser.save();
 
       const pointsService = new PointsServices();
       await pointsService.initWavvUserICPIdentity(newUser.id);
@@ -458,6 +478,10 @@ export class AuthController {
       return { ...userData, access_token, refresh_token };
     }
 
+    if (body.principal) {
+      user.principal = body.principal;
+      await user.save();
+    }
     // check if provider is not google
     if (user.provider !== "google")
       throw new BadRequestError(
@@ -472,7 +496,7 @@ export class AuthController {
       emailVerified: user.emailVerified,
       provider: user.provider,
       profilePictureUrl: user.profilePictureUrl,
-      username: user.username
+      username: user.username,
     };
 
     // generate access and refresh tokens
@@ -489,6 +513,6 @@ export class AuthController {
 
   @Get("/current-user")
   async me(@CurrentUser() user: User) {
-    return await User.findOneByOrFail({ id: user.id});
+    return await User.findOneByOrFail({ id: user.id });
   }
 }
