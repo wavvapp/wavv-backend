@@ -69,4 +69,5 @@ class PointsServices {
   }
 }
 
+
 export default PointsServices;
