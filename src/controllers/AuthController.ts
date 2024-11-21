@@ -389,7 +389,7 @@ export class AuthController {
       const user = await User.findOneBy({ username });
       if (user?.principal) {
         const pointsService = new PointsServices();
-        await pointsService.increaseUserPoints({
+        pointsService.increaseUserPoints({
           principal: user.principal,
           points: USERNAME_UPDATE_POINTS,
         });
