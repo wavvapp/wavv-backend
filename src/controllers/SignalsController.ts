@@ -6,7 +6,7 @@ import {
   HttpError,
   JsonController,
   Post,
-  Put
+  Put,
 } from "routing-controllers";
 import { ACTIVITY_FRIENDS_POINTS } from "../constants/points";
 import { Friendship } from "../entity/Friendship";
@@ -40,7 +40,7 @@ export class SignalController {
       });
 
       if (!signal) {
-        const currentUser =  await User.findOneByOrFail({ id: user.id });
+        const currentUser = await User.findOneByOrFail({ id: user.id });
         const newSignal = Signal.create({
           user: currentUser,
           status: "inactive",
@@ -58,12 +58,13 @@ export class SignalController {
             friendId: friendSignal.friendship.friend.id,
             username: friendSignal.friendship.friend.username,
             names: friendSignal.friendship.friend.names,
-            profilePictureUrl: friendSignal.friendship.friend?.profilePictureUrl,
+            profilePictureUrl:
+              friendSignal.friendship.friend?.profilePictureUrl,
           };
         }),
       };
 
-      mySignal.friendSignal = []
+      mySignal.friendSignal = [];
 
       return mySignal;
     } catch (error) {
@@ -130,8 +131,7 @@ export class SignalController {
     @Body() body: UpdateSignalBody
   ) {
     const { friends } = body;
-    const signal = await Signal.findOneBy({ user: { id: user.id } });;
-    
+    const signal = await Signal.findOneBy({ user: { id: user.id } });
 
     if (!signal) {
       throw new HttpError(404, "Signal not found");
@@ -143,9 +143,7 @@ export class SignalController {
     // add new friend to the signals
     for (const friendId of friends) {
       const friendship = await Friendship.findOneOrFail({
-        where: [
-          { user: { id: user.id }, friend: { id: friendId } },
-        ],
+        where: [{ user: { id: user.id }, friend: { id: friendId } }],
       });
       const friendSignal = FriendSignal.create({
         friendship: { id: friendship.id },
@@ -165,12 +163,21 @@ export class SignalController {
       relations: ["friendSignal.friendship.friend"],
     });
 
+    const fetchUserPrincipal = await User.findOne({
+      select: ["principal"],
+      where: {
+        id: user.id,
+      },
+    });
 
-    const pointsService = new PointsServices();
-    pointsService.insreaseUserPoints(user.id, friends.length * ACTIVITY_FRIENDS_POINTS);
+    if (fetchUserPrincipal?.principal) {
+      const pointsService = new PointsServices();
+      pointsService.increaseUserPoints({
+        principal: fetchUserPrincipal.principal,
+        points: friends.length * ACTIVITY_FRIENDS_POINTS,
+      });
+    }
 
-
-    
     const mySignal = {
       ...newSignal,
       friends: newSignal.friendSignal.map((friendSignal) => {
@@ -183,7 +190,7 @@ export class SignalController {
       }),
     };
 
-    mySignal.friendSignal = []
+    mySignal.friendSignal = [];
 
     return mySignal;
   }

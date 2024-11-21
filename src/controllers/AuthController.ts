@@ -385,11 +385,15 @@ export class AuthController {
       const usernameExist = await User.existsBy({ username });
       if (usernameExist)
         return new BadRequestError("Username is already taken");
-      const pointsService = new PointsServices();
-      await pointsService.insreaseUserPoints(
-        appUser.id,
-        USERNAME_UPDATE_POINTS
-      );
+
+      const user = await User.findOneByOrFail({ username });
+      if (user.principal) {
+        const pointsService = new PointsServices();
+        await pointsService.increaseUserPoints({
+          principal: user.principal,
+          points: USERNAME_UPDATE_POINTS,
+        });
+      }
     }
 
     await User.update(appUser.id, data);
@@ -449,9 +453,6 @@ export class AuthController {
       if (body.principal) newUser.principal = body.principal;
 
       await newUser.save();
-
-      const pointsService = new PointsServices();
-      await pointsService.initWavvUserICPIdentity(newUser.id);
 
       const userData = {
         id: newUser.id,

@@ -1,54 +1,41 @@
 import axios from "axios";
 
-class PointsServices {
-  private readonly USER_ENDPOINT = this.cannisterClien("/users");
+type GetPointsByPrincipal = {
+  id: string;
+  principal: string;
+};
 
-  private cannisterClien(path: string) {
+type IncreaseUserPoints = {
+  principal: string;
+  points: number;
+};
+
+type DecreaseUserPoints = IncreaseUserPoints;
+
+class PointsServices {
+  private readonly USER_ENDPOINT = this.canisterClient("/v2/users");
+
+  private canisterClient(path: string) {
     return `${process.env.POINTS_CANISTER_BASE_URL}${path}`;
   }
 
-  async initWavvUserICPIdentity(id: string) {
+  async getPointsByPrincipal({ id, principal }: GetPointsByPrincipal) {
     //TODO: CANNISTER RESPONSE ERRORS
     try {
-      const response = await axios.post(this.USER_ENDPOINT, {
-        userId: id,
-        points: 0,
-      });
-      return response.data;
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async getPointsByUserId(id:string) {
-    //TODO: CANNISTER RESPONSE ERRORS
-    try {
-      const response = await axios.get(`${this.USER_ENDPOINT}/${id}`);
-      return response.data;
-    } catch (error) {
-
-      this.initWavvUserICPIdentity(id)
-      return { id, points: 0 };
-    }
-  }
-
-  async getPointsByPrincipal(id:string, principal: string) {
-    //TODO: CANNISTER RESPONSE ERRORS
-    try {
-      const response = await axios.get(`v2/${this.USER_ENDPOINT}/${principal}`);
+      const response = await axios.get(`${this.USER_ENDPOINT}/${principal}`);
       return response.data;
     } catch (error) {
       return { id, points: 0 };
     }
   }
 
-  async insreaseUserPoints(id: string, points: number) {
+  async increaseUserPoints({ principal, points }: IncreaseUserPoints) {
     //TODO: CANNISTER RESPONSE ERRORS
     try {
       const response = await axios.post(
-        `v2/${this.USER_ENDPOINT}/${id}/increase`,
+        `${this.USER_ENDPOINT}/${principal}/increase`,
         {
-          id,
+          principal,
           points,
         }
       );
@@ -58,13 +45,14 @@ class PointsServices {
     }
   }
 
-  async decreaseUserPoints(id: string) {
+  async decreaseUserPoints({ principal, points }: DecreaseUserPoints) {
     //TODO: CANNISTER RESPONSE ERRORS
     try {
       const response = await axios.post(
-        `v2/${this.USER_ENDPOINT}/${id}/increase`,
+        `${this.USER_ENDPOINT}/${principal}/increase`,
         {
-          id,
+          principal,
+          points,
         }
       );
       return response.data;
@@ -73,6 +61,5 @@ class PointsServices {
     }
   }
 }
-
 
 export default PointsServices;
