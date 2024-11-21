@@ -10,6 +10,7 @@ export class PointsController {
     const user = await User.findOneByOrFail({ id: currentUser.id });
     const pointsService = new PointsServices();
 
-    return await pointsService.getPointsByPrincipal(user.id, user.principal);
+    const points = await pointsService.getPointsByPrincipal(user.id, user.principal);
+    return {...points, isIcpIdInSync: !!user.principal };
   }
 }

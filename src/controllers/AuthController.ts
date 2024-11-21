@@ -478,7 +478,7 @@ export class AuthController {
       return { ...userData, access_token, refresh_token };
     }
 
-    if (body.principal) {
+    if (body.principal && !user.principal) {
       user.principal = body.principal;
       await user.save();
     }

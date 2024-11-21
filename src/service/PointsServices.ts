@@ -46,7 +46,7 @@ class PointsServices {
     //TODO: CANNISTER RESPONSE ERRORS
     try {
       const response = await axios.post(
-        `${this.USER_ENDPOINT}/${id}/increase`,
+        `v2/${this.USER_ENDPOINT}/${id}/increase`,
         {
           id,
           points,
@@ -62,7 +62,7 @@ class PointsServices {
     //TODO: CANNISTER RESPONSE ERRORS
     try {
       const response = await axios.post(
-        `${this.USER_ENDPOINT}/${id}/decrease`,
+        `v2/${this.USER_ENDPOINT}/${id}/increase`,
         {
           id,
         }
