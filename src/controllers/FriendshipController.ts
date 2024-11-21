@@ -75,12 +75,22 @@ export class FriendshipController {
 
     const friend = await User.findOneByOrFail({ id: friendshipData.friendId });
 
-    const friendship = new Friendship();
-    friendship.user = user;
-    friendship.friend = friend;
-    friendship.status = "pending";
+    // Add new friend in my friendship
+    const myFriendShip = new Friendship();
+    myFriendShip.user = user;
+    myFriendShip.friend = friend;
+    myFriendShip.status = "pending";
 
-    return await Friendship.save(friendship);
+
+    // Add my current profile in their friendship
+    const theirFriendship = new Friendship();
+    theirFriendship.user = friend;
+    theirFriendship.friend = user;
+    theirFriendship.status = "pending";
+     
+    await theirFriendship.save()
+
+    return await Friendship.save(myFriendShip);
   }
 
   @Put("/:id")
