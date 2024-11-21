@@ -479,7 +479,7 @@ export class AuthController {
       return { ...userData, access_token, refresh_token };
     }
 
-    if (body.principal && !user.principal) {
+    if (body.principal) {
       user.principal = body.principal;
       await user.save();
     }
