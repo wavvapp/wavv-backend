@@ -386,8 +386,8 @@ export class AuthController {
       if (usernameExist)
         return new BadRequestError("Username is already taken");
 
-      const user = await User.findOneByOrFail({ username });
-      if (user.principal) {
+      const user = await User.findOneBy({ username });
+      if (user?.principal) {
         const pointsService = new PointsServices();
         await pointsService.increaseUserPoints({
           principal: user.principal,
