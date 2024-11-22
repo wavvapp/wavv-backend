@@ -23,7 +23,7 @@ export class UsersController {
     };
 
     if (q) {
-      filterObj["names"] = Like(`${q}%`);
+      filterObj["names"] = Like(`%${q}`);
     }
 
     const users = await User.find({
