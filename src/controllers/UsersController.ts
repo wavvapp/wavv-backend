@@ -6,7 +6,7 @@ import {
   Param,
   QueryParam,
 } from "routing-controllers";
-import { FindOptionsWhere, Like, Not } from "typeorm";
+import { FindOptionsWhere, IsNull, Like, Not } from "typeorm";
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
@@ -24,6 +24,7 @@ export class UsersController {
 
     if (q) {
       filterObj["names"] = Like(`%${q}%`);
+      filterObj["username"] = Not(IsNull());
     }
 
     const users = await User.find({

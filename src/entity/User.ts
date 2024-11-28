@@ -7,7 +7,7 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from "typeorm";
 import { Friendship } from "./Friendship";
 import { Signal } from "./Signal";
@@ -64,7 +64,7 @@ export class User extends BaseEntity {
   provider: string;
 
   @Column({ default: false })
-  profileStatus: Boolean
+  profileStatus: Boolean;
 
   @CreateDateColumn()
   createdAt: Date;
