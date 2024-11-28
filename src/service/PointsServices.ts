@@ -19,7 +19,7 @@ class PointsServices {
     return `${process.env.POINTS_CANISTER_BASE_URL}${path}`;
   }
 
-  async getPointsByEmail({ id, sub }: GetPointsByEmail) {
+  async getPointsByEmailId({ id, sub }: GetPointsByEmail) {
     try {
       const response = await axios.get(`${this.USER_ENDPOINT}/${sub}`);
       return response.data;
