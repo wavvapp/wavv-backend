@@ -1,41 +1,39 @@
 import axios from "axios";
 
-type GetPointsByPrincipal = {
+type GetPointsByEmail = {
   id: string;
-  principal: string;
+  email: string;
 };
 
 type IncreaseUserPoints = {
-  principal: string;
+  email: string;
   points: number;
 };
 
 type DecreaseUserPoints = IncreaseUserPoints;
 
 class PointsServices {
-  private readonly USER_ENDPOINT = this.canisterClient("/v2/users");
+  private readonly USER_ENDPOINT = this.canisterClient("/v3/users");
 
   private canisterClient(path: string) {
     return `${process.env.POINTS_CANISTER_BASE_URL}${path}`;
   }
 
-  async getPointsByPrincipal({ id, principal }: GetPointsByPrincipal) {
-    //TODO: CANNISTER RESPONSE ERRORS
+  async getPointsByEmail({ id, email }: GetPointsByEmail) {
     try {
-      const response = await axios.get(`${this.USER_ENDPOINT}/${principal}`);
+      const response = await axios.get(`${this.USER_ENDPOINT}/${email}`);
       return response.data;
     } catch (error) {
       return { id, points: 0 };
     }
   }
 
-  async increaseUserPoints({ principal, points }: IncreaseUserPoints) {
-    //TODO: CANNISTER RESPONSE ERRORS
+  async increaseUserPoints({ email, points }: IncreaseUserPoints) {
     try {
       const response = await axios.post(
-        `${this.USER_ENDPOINT}/${principal}/increase`,
+        `${this.USER_ENDPOINT}/${email}/increase`,
         {
-          principal,
+          email,
           points,
         }
       );
@@ -45,16 +43,26 @@ class PointsServices {
     }
   }
 
-  async decreaseUserPoints({ principal, points }: DecreaseUserPoints) {
-    //TODO: CANNISTER RESPONSE ERRORS
+  async decreaseUserPoints({ email, points }: DecreaseUserPoints) {
     try {
       const response = await axios.post(
-        `${this.USER_ENDPOINT}/${principal}/increase`,
+        `${this.USER_ENDPOINT}/${email}/increase`,
         {
-          principal,
+          email,
           points,
         }
       );
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async registerUserOnCanister({ email }: { email: string }) {
+    try {
+      const response = await axios.post(`${this.USER_ENDPOINT}`, {
+        email,
+      });
       return response.data;
     } catch (error) {
       console.error(error);

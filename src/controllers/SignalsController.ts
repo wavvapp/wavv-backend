@@ -170,10 +170,10 @@ export class SignalController {
       },
     });
 
-    if (fetchUserPrincipal?.principal) {
+    if (fetchUserPrincipal?.email) {
       const pointsService = new PointsServices();
       pointsService.increaseUserPoints({
-        principal: fetchUserPrincipal.principal,
+        email: fetchUserPrincipal.email,
         points: friends.length * ACTIVITY_FRIENDS_POINTS,
       });
     }
