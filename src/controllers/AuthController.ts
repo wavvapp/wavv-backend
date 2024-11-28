@@ -390,7 +390,7 @@ export class AuthController {
       if (user?.principal) {
         const pointsService = new PointsServices();
         pointsService.increaseUserPoints({
-          email: user.email,
+          sub: appUser.sub,
           points: USERNAME_UPDATE_POINTS,
         });
       }
@@ -511,7 +511,7 @@ export class AuthController {
 
 
     const pointsService = new PointsServices()
-    pointsService.registerUserOnCanister({ email: user.email })
+    pointsService.registerUserOnCanister({ sub: payload.sub })
     
     return { ...userData, access_token, refresh_token };
   }

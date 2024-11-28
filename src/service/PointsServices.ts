@@ -2,11 +2,11 @@ import axios from "axios";
 
 type GetPointsByEmail = {
   id: string;
-  email: string;
+  sub: string;
 };
 
 type IncreaseUserPoints = {
-  email: string;
+  sub: string;
   points: number;
 };
 
@@ -19,21 +19,20 @@ class PointsServices {
     return `${process.env.POINTS_CANISTER_BASE_URL}${path}`;
   }
 
-  async getPointsByEmail({ id, email }: GetPointsByEmail) {
+  async getPointsByEmail({ id, sub }: GetPointsByEmail) {
     try {
-      const response = await axios.get(`${this.USER_ENDPOINT}/${email}`);
+      const response = await axios.get(`${this.USER_ENDPOINT}/${sub}`);
       return response.data;
     } catch (error) {
       return { id, points: 0 };
     }
   }
 
-  async increaseUserPoints({ email, points }: IncreaseUserPoints) {
+  async increaseUserPoints({ sub, points }: IncreaseUserPoints) {
     try {
       const response = await axios.post(
-        `${this.USER_ENDPOINT}/${email}/increase`,
+        `${this.USER_ENDPOINT}/${sub}/increase`,
         {
-          email,
           points,
         }
       );
@@ -43,12 +42,11 @@ class PointsServices {
     }
   }
 
-  async decreaseUserPoints({ email, points }: DecreaseUserPoints) {
+  async decreaseUserPoints({ sub, points }: DecreaseUserPoints) {
     try {
       const response = await axios.post(
-        `${this.USER_ENDPOINT}/${email}/increase`,
+        `${this.USER_ENDPOINT}/${sub}/increase`,
         {
-          email,
           points,
         }
       );
@@ -58,10 +56,10 @@ class PointsServices {
     }
   }
 
-  async registerUserOnCanister({ email }: { email: string }) {
+  async registerUserOnCanister({ sub }: { sub: string }) {
     try {
       const response = await axios.post(`${this.USER_ENDPOINT}`, {
-        email,
+        id: sub,
       });
       return response.data;
     } catch (error) {

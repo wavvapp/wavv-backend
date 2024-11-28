@@ -173,7 +173,7 @@ export class SignalController {
     if (fetchUserPrincipal?.email) {
       const pointsService = new PointsServices();
       pointsService.increaseUserPoints({
-        email: fetchUserPrincipal.email,
+        sub: user.sub,
         points: friends.length * ACTIVITY_FRIENDS_POINTS,
       });
     }
