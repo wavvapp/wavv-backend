@@ -386,8 +386,7 @@ export class AuthController {
       if (usernameExist)
         return new BadRequestError("Username is already taken");
 
-      const user = await User.findOneBy({ username });
-      if (user?.principal) {
+      if (appUser?.sub) {
         const pointsService = new PointsServices();
         pointsService.increaseUserPoints({
           sub: appUser.sub,
@@ -513,7 +512,7 @@ export class AuthController {
 
 
     const pointsService = new PointsServices()
-    await  pointsService.registerUserOnCanister({ sub: payload.sub })
+    pointsService.registerUserOnCanister({ sub: payload.sub })
     
     return { ...userData, access_token, refresh_token };
   }
