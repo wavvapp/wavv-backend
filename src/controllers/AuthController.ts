@@ -465,6 +465,7 @@ export class AuthController {
         isNew: true,
         username: newUser.username,
         points: 0,
+        sub: payload.sub
       };
 
       // generate access and refresh tokens
@@ -498,6 +499,7 @@ export class AuthController {
       provider: user.provider,
       profilePictureUrl: user.profilePictureUrl,
       username: user.username,
+      sub: payload.sub
     };
 
     // generate access and refresh tokens
