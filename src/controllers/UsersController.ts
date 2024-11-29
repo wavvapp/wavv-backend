@@ -47,10 +47,7 @@ export class UsersController {
   }
 
   @Get("/:username")
-  async getUserByUsername(
-    @CurrentUser({ required: true }) appUser: AppUser,
-    @Param("username") username: string
-  ) {
+  async getUserByUsername(@Param("username") username: string) {
     const isUsernameTaken = await User.existsBy({ username });
     if (isUsernameTaken) return new BadRequestError("Username already exist");
 
