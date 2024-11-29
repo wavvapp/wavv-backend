@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { Response } from "express";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import {
@@ -11,6 +12,7 @@ import {
   JsonController,
   Patch,
   Post,
+  Res,
 } from "routing-controllers";
 import { USERNAME_UPDATE_POINTS } from "../constants/points";
 import { User } from "../entity/User";
@@ -112,6 +114,10 @@ class GoogleSigninBody {
 
   @IsOptional()
   principal?: string;
+
+  @IsOptional()
+  @IsString()
+  username?: string
 }
 
 @JsonController("/api/auth")
@@ -403,7 +409,7 @@ export class AuthController {
   }
 
   @Post("/google-signin")
-  async googleSignin(@Body() body: GoogleSigninBody) {
+  async googleSignin(@Body() body: GoogleSigninBody, @Res() res: Response ) {
     const { token, platform } = body;
 
     if (!platform) {
@@ -447,10 +453,22 @@ export class AuthController {
       newUser.email = payload.email || "";
       newUser.names = payload.name || "";
       newUser.profilePictureUrl = payload.picture || "";
+      newUser.username = body.username || "";
       newUser.provider = "google";
 
       if (body.principal) newUser.principal = body.principal;
 
+      /**
+       * 
+       * If the user does not have username, means their info data 
+       * Is accepted but not ready to be saved until user sends username as well.
+       *  
+      */
+      if(!newUser.username) {
+        return res.status(202).json({
+          message: "User info has been accepted for processing."
+        })
+      }
       await newUser.save();
 
       const userData = {
@@ -461,7 +479,6 @@ export class AuthController {
         emailVerified: newUser.emailVerified,
         provider: newUser.provider,
         profilePictureUrl: newUser.profilePictureUrl,
-        isNew: true,
         username: newUser.username,
         points: 0,
         sub: payload.sub
