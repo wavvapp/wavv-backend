@@ -22,7 +22,7 @@ export class Friendship extends BaseEntity {
   @ManyToOne(() => User, (user) => user.friendships)
   friend: User;
 
-  @OneToMany(() => FriendSignal, (friendSignal) => friendSignal.friendship)
+  @OneToMany(() => FriendSignal, (friendSignal) => friendSignal.friendship, { cascade: true, onDelete: "CASCADE" })
   friendSignal: FriendSignal[];
 
   @Column()

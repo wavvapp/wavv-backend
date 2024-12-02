@@ -16,7 +16,7 @@ export class Signal extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.signals)
+  @ManyToOne(() => User, (user) => user.signals, { onDelete: 'CASCADE' })
   user: User;
 
   @Column()
@@ -34,6 +34,6 @@ export class Signal extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => FriendSignal, (friendSignal) => friendSignal.signal)
+  @OneToMany(() => FriendSignal, (friendSignal) => friendSignal.signal, {cascade: true, onDelete: "CASCADE"})
   friendSignal: FriendSignal[];
 }

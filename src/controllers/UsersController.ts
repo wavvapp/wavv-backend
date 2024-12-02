@@ -65,58 +65,17 @@ export class UsersController {
     // I don't think we have an admin, if we do then make them be the only ones permitted to do so.
     const user = await User.findOneByOrFail({ email })
 
-    if (!user) return res.status(204).json({ mesage: "email not not foundf" })
+    try {
+        if (!user) return res.status(204).json({ message: "email not found" });
 
-    const friendsIhaveAddedd = await Friendship.find({
-      where: { user: { id: user.id } },
-    });
+        await User.delete(user.id);
 
-    const friendsWhoAddedMe = await Friendship.find({
-      where: { friend: { id: user.id } },
-    })
-
-    const signalsOfFriendsWhoAddedMeToTheirCurrentSignal = await Friendship.find({
-      relations: ["user", "friendSignal.signal", "friendSignal.friendship"],
-      where: {
-        friendSignal: {
-          friendship: {
-            friend: {
-              id: user.id
-            }
-          }
-        }
-      },
-    });
-
-    const testOutFriendsignal = await Signal.find({
-      where: { id: "3287ca54-c44f-45b5-8738-4629a4d0722d" }, relations: ["friendSignal.friendship.friend"],
-    })
-
-    let friendSignalIds: string[] = []
-    signalsOfFriendsWhoAddedMeToTheirCurrentSignal.map(signal => {
-      signal.friendSignal.map((friendSignal) => {
-        friendSignalIds.push(friendSignal.id)
-        return
-      })
-      return
+        return {
+            message: "Done deleting user"
+        };
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "An error occurred while deleting user" });
     }
-    )
-
-
-    /// then delete them all
-
-    // signalsOfFriendsWhoAddedMeToTheirCurrentSignal.forEach(async (signal) =>
-    //   await FriendSignal.remove(signal.friendSignal)
-    // )
-    // await Friendship.remove(friendsIhaveAddedd)
-    // await Friendship.remove(friendsWhoAddedMe)
-    // await Signal.delete({ user: { id: user.id } }) // Just delete the signal since we always have one anyway and i assume that the people who can see it are also gone by default
-    // await User.remove(user)
-
-    res.status(200).json({
-      testOutFriendsignal,
-      friendSignalIds,
-      signalsOfFriendsWhoAddedMeToTheirCurrentSignal
-    })
   }
 }

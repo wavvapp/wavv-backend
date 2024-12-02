@@ -72,9 +72,9 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Friendship, (friendship) => friendship.user)
+  @OneToMany(() => Friendship, (friendship) => friendship.user, { cascade: true, onDelete: 'CASCADE' })
   friendships: Friendship[];
 
-  @OneToMany(() => Signal, (signal) => signal.user)
+  @OneToMany(() => Signal, (signal) => signal.user , { cascade: true, onDelete: 'CASCADE' })
   signals: Signal[];
 }
