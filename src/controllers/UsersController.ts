@@ -24,8 +24,8 @@ export class UsersController {
 
     if(q){
       usersSearchBuilder.andWhere(new Brackets(qb => {
-        qb.where('user.names LIKE :search', { search: `%${q}%` })
-          .orWhere('user.username LIKE :search', { search: `%${q}%` });
+        qb.where('user.names ILIKE :search', { search: `%${q}%` })
+          .orWhere('user.username ILIKE :search', { search: `%${q}%` });
       }))
     }
 
