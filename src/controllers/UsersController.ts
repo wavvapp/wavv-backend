@@ -6,7 +6,7 @@ import {
   Param,
   QueryParam,
 } from "routing-controllers";
-import { FindOptionsWhere, IsNull, Like, Not } from "typeorm";
+import { Brackets } from "typeorm";
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
@@ -18,21 +18,18 @@ export class UsersController {
     @CurrentUser({ required: true }) appUser: AppUser,
     @QueryParam("q") q: string
   ) {
-    const filterObj: FindOptionsWhere<User> = {
-      id: Not(appUser.id),
-    };
 
-    if (q) {
-      filterObj["names"] = Like(`%${q}%`);
-      filterObj["username"] = Like(`%${q}%`);
-      filterObj["username"] = Not(IsNull());
+    const usersSearchBuilder = User.createQueryBuilder('user')
+    .where('user.id != :appUserId', { appUserId: appUser.id })
+
+    if(q){
+      usersSearchBuilder.andWhere(new Brackets(qb => {
+        qb.where('user.names LIKE :search', { search: `%${q}%` })
+          .orWhere('user.username LIKE :search', { search: `%${q}%` });
+      }))
     }
 
-    const users = await User.find({
-      where: [
-        filterObj
-      ],
-    });
+    const users = await usersSearchBuilder.getMany();
 
     const friendships = await Friendship.find({
       relations: ["friend"],
