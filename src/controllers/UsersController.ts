@@ -29,7 +29,9 @@ export class UsersController {
     }
 
     const users = await User.find({
-      where: filterObj,
+      where: [
+        filterObj
+      ],
     });
 
     const friendships = await Friendship.find({
