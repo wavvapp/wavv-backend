@@ -24,6 +24,7 @@ export class UsersController {
 
     if (q) {
       filterObj["names"] = Like(`%${q}%`);
+      filterObj["username"] = Like(`%${q}%`);
       filterObj["username"] = Not(IsNull());
     }
 
