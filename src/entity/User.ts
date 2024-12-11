@@ -17,6 +17,10 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  @Exclude()
+  @Column({ nullable: true })
+  authId: string
+
   @Column()
   names: string;
 

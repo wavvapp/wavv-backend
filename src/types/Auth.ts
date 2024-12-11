@@ -7,3 +7,9 @@ export type AppUser = {
   profilePictureUrl?: string;
   sub: string
 };
+
+
+export enum Provider  {
+  GOOGLE = "google",
+  APPLE = "apple"
+}

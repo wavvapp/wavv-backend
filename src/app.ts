@@ -19,8 +19,8 @@ import {
   authorizationChecker,
   currentUserChecker,
 } from "./middlewares/authorization";
-import EntityNotFoundHandler from "./middlewares/EntityNotFoundHandler";
 import { ErrorHandler } from "./middlewares/errorHandler";
+import EntityNotFoundHandler from "./middlewares/notFoundHandler";
 
 const app = express();
 const options: RoutingControllersOptions = {
