@@ -354,140 +354,133 @@ export class AuthController {
 
   @Post("/signin")
   async signin(@Body() body: AuthSigninBody, @Res() res: Response) {
+    const { token, platform } = body;
 
-    try {
-      const { token, platform } = body;
+    if (!platform) {
+      throw new BadRequestError("Platform is required");
+    }
 
-      if (!platform) {
-        throw new BadRequestError("Platform is required");
-      }
-  
-      // check if platform is android or ios
-      if (!["android", "ios", "web"].includes(platform)) {
-        throw new BadRequestError("Invalid platform");
-      }
-  
-      if (body.provider === Provider.APPLE) {
-        const authService = new AuthService(token);
-        return await authService.signin(Provider.APPLE, body, res);
-      }
-  
-      const ANDROID_CLIENT_ID = process.env.WEB_GOOGLE_CLIENT_ID;
-      const WEB_CLIENT_ID = process.env.WEB_GOOGLE_CLIENT_ID;
-      const IOS_CLIENT_ID = process.env.IOS_GOOGLE_CLIENT_ID;
-  
-      const clientId = {
-        android: ANDROID_CLIENT_ID,
-        ios: IOS_CLIENT_ID,
-        web: WEB_CLIENT_ID,
-      }[platform];
-  
-      const client = new OAuth2Client(clientId);
-  
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: clientId,
-      });
-  
-      const payload = ticket.getPayload();
-      if (!payload) throw new BadRequestError("Invalid Google token");
-  
-      const user = await User.findOneBy({
-        email: payload.email,
-      });
-  
-      if (!user) {
-        const newUser = new User();
-  
-        if (!payload.email) throw new BadRequestError("Email is required");
-  
-        newUser.email = payload.email || "";
-        newUser.names = payload.name || "";
-        newUser.profilePictureUrl = payload.picture || "";
-        newUser.username = body.username || "";
-        newUser.provider = "google";
-        newUser.authId = payload.sub;
-  
-        if (body.principal) newUser.principal = body.principal;
-  
-        /**
-         *
-         * If the user does not have username, means their info data
-         * Is accepted but not ready to be saved until user sends username as well.
-         *
-         */
-        if (!newUser.username) {
-          return res.status(202).json({
-            message: "User info has been accepted for processing.",
-          });
-        }
-        await newUser.save();
-  
-        const userData = {
-          id: newUser.id,
-          email: newUser.email,
-          names: newUser.names,
-          phoneNumber: newUser.phoneNumber,
-          emailVerified: newUser.emailVerified,
-          provider: newUser.provider,
-          profilePictureUrl: newUser.profilePictureUrl,
-          username: newUser.username,
-          points: 0,
-          sub: newUser.authId,
-        };
-  
-        // generate access and refresh tokens
-        const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
-          expiresIn: "3d",
+    // check if platform is android or ios
+    if (!["android", "ios", "web"].includes(platform)) {
+      throw new BadRequestError("Invalid platform");
+    }
+
+    if (body.provider === Provider.APPLE) {
+      const authService = new AuthService(token);
+      return await authService.signin(Provider.APPLE, body, res);
+    }
+
+    const ANDROID_CLIENT_ID = process.env.WEB_GOOGLE_CLIENT_ID;
+    const WEB_CLIENT_ID = process.env.WEB_GOOGLE_CLIENT_ID;
+    const IOS_CLIENT_ID = process.env.IOS_GOOGLE_CLIENT_ID;
+
+    const clientId = {
+      android: ANDROID_CLIENT_ID,
+      ios: IOS_CLIENT_ID,
+      web: WEB_CLIENT_ID,
+    }[platform];
+
+    const client = new OAuth2Client(clientId);
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: clientId,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload) throw new BadRequestError("Invalid Google token");
+
+    const user = await User.findOneBy({
+      email: payload.email,
+    });
+
+    if (!user) {
+      const newUser = new User();
+
+      if (!payload.email) throw new BadRequestError("Email is required");
+
+      newUser.email = payload.email || "";
+      newUser.names = payload.name || "";
+      newUser.profilePictureUrl = payload.picture || "";
+      newUser.username = body.username || "";
+      newUser.provider = "google";
+      newUser.authId = payload.sub;
+
+      if (body.principal) newUser.principal = body.principal;
+
+      /**
+       *
+       * If the user does not have username, means their info data
+       * Is accepted but not ready to be saved until user sends username as well.
+       *
+       */
+      if (!newUser.username) {
+        return res.status(202).json({
+          message: "User info has been accepted for processing.",
         });
-  
-        const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
-          expiresIn: "7d",
-        });
-  
-        return { ...userData, access_token, refresh_token };
       }
+      await newUser.save();
 
-
-      if (!user.authId) {
-        user.authId = payload.sub;
-        await user.save();
-      }
-  
-      if (body.principal) {
-        user.principal = body.principal;
-        await user.save();
-      }
-  
       const userData = {
-        id: user.id,
-        email: user.email,
-        names: user.names,
-        phoneNumber: user.phoneNumber,
-        emailVerified: user.emailVerified,
-        provider: user.provider,
-        profilePictureUrl: user.profilePictureUrl,
-        username: user.username,
-        sub: user.authId,
+        id: newUser.id,
+        email: newUser.email,
+        names: newUser.names,
+        phoneNumber: newUser.phoneNumber,
+        emailVerified: newUser.emailVerified,
+        provider: newUser.provider,
+        profilePictureUrl: newUser.profilePictureUrl,
+        username: newUser.username,
+        points: 0,
+        sub: newUser.authId,
       };
-  
+
       // generate access and refresh tokens
       const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
         expiresIn: "3d",
       });
-  
+
       const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
         expiresIn: "7d",
       });
-  
-      const pointsService = new PointsServices();
-      pointsService.registerUserOnCanister({ sub: payload.sub });
-  
+
       return { ...userData, access_token, refresh_token };
-    } catch (error) {
-      console.log(error)
     }
-   
+
+    if (!user.authId) {
+      user.authId = payload.sub;
+      await user.save();
+    }
+
+    if (body.principal) {
+      user.principal = body.principal;
+      await user.save();
+    }
+
+    const userData = {
+      id: user.id,
+      email: user.email,
+      names: user.names,
+      phoneNumber: user.phoneNumber,
+      emailVerified: user.emailVerified,
+      provider: user.provider,
+      profilePictureUrl: user.profilePictureUrl,
+      username: user.username,
+      sub: user.authId,
+    };
+
+    // generate access and refresh tokens
+    const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
+      expiresIn: "3d",
+    });
+
+    const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
+      expiresIn: "7d",
+    });
+
+    const pointsService = new PointsServices();
+    pointsService.registerUserOnCanister({ sub: payload.sub });
+
+    return { ...userData, access_token, refresh_token };
   }
 
   @Get("/current-user")

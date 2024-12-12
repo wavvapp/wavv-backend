@@ -27,7 +27,6 @@ class AuthService {
     response: Response
   ) {
     const { names, email: bodyPayloadEmail, username } = bodyPaylod;
-    console.log(bodyPaylod);
 
     return await new Promise((resolve, reject) => {
       jwt.verify(
