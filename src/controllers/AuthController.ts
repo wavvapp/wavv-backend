@@ -118,8 +118,9 @@ class AuthSigninBody {
   @IsString()
   username?: string;
 
+  @IsOptional()
   @IsString()
-  provider: Provider;
+  provider?: Provider;
 
   @IsString()
   @IsOptional()
