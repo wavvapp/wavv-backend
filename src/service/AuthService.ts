@@ -59,6 +59,7 @@ class AuthService {
             newUser.names = names;
             newUser.username = username || "";
             newUser.provider = Provider.APPLE;
+            newUser.authId =  decodeData.sub;
 
             /**
              *
@@ -89,7 +90,7 @@ class AuthService {
               provider: newUser.provider,
               profilePictureUrl: newUser.profilePictureUrl,
               username: newUser.username,
-              sub: decodeData.sub,
+              sub: newUser.authId,
             };
 
             const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
