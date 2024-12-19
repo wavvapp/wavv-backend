@@ -12,7 +12,6 @@ import {
   Post,
   Res,
 } from "routing-controllers";
-import { USERNAME_UPDATE_POINTS } from "../constants/points";
 import { User } from "../entity/User";
 import AuthService from "../service/AuthService";
 import PointsServices from "../service/PointsServices";
@@ -210,14 +209,6 @@ export class AuthController {
       const usernameExist = await User.existsBy({ username });
       if (usernameExist)
         return new BadRequestError("Username is already taken");
-
-      if (appUser?.sub) {
-        const pointsService = new PointsServices();
-        pointsService.increaseUserPoints({
-          sub: appUser.sub,
-          points: USERNAME_UPDATE_POINTS,
-        });
-      }
     }
 
     await User.update(appUser.id, data);

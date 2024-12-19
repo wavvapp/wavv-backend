@@ -20,13 +20,13 @@ export class Signal extends BaseEntity {
   user: User;
 
   @Column()
-  status: string;
-
-  @Column()
   when: string;
 
   @Column({ nullable: true })
-  status_message: string;
+  statusMessage: string;
+
+  @Column({ type: "time" })
+  endAt: Date
 
   @CreateDateColumn()
   createdAt: Date;
@@ -36,4 +36,10 @@ export class Signal extends BaseEntity {
 
   @OneToMany(() => FriendSignal, (friendSignal) => friendSignal.signal)
   friendSignal: FriendSignal[];
+
+
+  hasEnded() {
+    const now =  new Date()
+    return 
+  }
 }

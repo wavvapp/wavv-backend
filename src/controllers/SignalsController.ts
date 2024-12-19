@@ -3,17 +3,13 @@ import {
   Body,
   CurrentUser,
   Get,
-  HttpError,
   JsonController,
   Post,
   Put,
 } from "routing-controllers";
-import { ACTIVITY_FRIENDS_POINTS } from "../constants/points";
-import { Friendship } from "../entity/Friendship";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Signal } from "../entity/Signal";
-import { User } from "../entity/User";
-import PointsServices from "../service/PointsServices";
+import SignalService from "../service/SignalService";
 import { AppUser } from "../types/Auth";
 
 class UpdateSignalBody {
@@ -21,9 +17,11 @@ class UpdateSignalBody {
     each: true,
   })
   friends: string[];
+
   @IsNotEmpty()
   @IsString()
-  status_message: string;
+  statusMessage: string;
+
   @IsNotEmpty()
   @IsString()
   when: string;
@@ -33,165 +31,60 @@ class UpdateSignalBody {
 export class SignalController {
   @Get("/")
   async getMyCurrentSignal(@CurrentUser() user: AppUser) {
-    try {
-      const signal = await Signal.findOne({
-        where: { user: { id: user.id } },
-        relations: ["friendSignal.friendship.friend"],
-      });
-
-      if (!signal) {
-        const currentUser = await User.findOneByOrFail({ id: user.id });
-        const newSignal = Signal.create({
-          user: currentUser,
-          status: "inactive",
-          when: "now",
-          status_message: "available",
-        });
-        await newSignal.save();
-        return { ...newSignal, friends: [] };
-      }
-
-      const mySignal = {
-        ...signal,
-        friends: signal.friendSignal.map((friendSignal) => {
-          return {
-            friendId: friendSignal.friendship.friend.id,
-            username: friendSignal.friendship.friend.username,
-            names: friendSignal.friendship.friend.names,
-            profilePictureUrl:
-              friendSignal.friendship.friend?.profilePictureUrl,
-          };
-        }),
-      };
-
-      mySignal.friendSignal = [];
-
-      return mySignal;
-    } catch (error) {
-      console.log(error);
-    }
+    const signalSerivce = new SignalService();
+    return await signalSerivce.initiateSignalIfNotExist({ user });
   }
 
-  // turn on the current signal, where we find or create a signal for the user
+
   @Post("/turn-on")
-  async turnOnSignal(@CurrentUser() user: User): Promise<Signal> {
-    let signal;
-    try {
-      signal = await Signal.findOneBy({ user: { id: user.id } });
-    } catch (error) {
-      throw new HttpError(500, "Error finding signal");
+  async turnOnSignal(@CurrentUser() user: AppUser) {
+    const signalSerivce = new SignalService();
+    const signal = await signalSerivce.getMySignalWithAssignedFriend(user);
+
+    // Re-activate user signal.
+    if (signal) {
+      await signalSerivce.activateMySignal({ signalId: signal.id });
     }
 
-    if (!signal) {
-      throw new HttpError(404, "Signal not found");
-    }
-
-    signal.status = "active";
-
-    try {
-      await signal.save();
-    } catch (error) {
-      throw new HttpError(500, "Error saving signal");
-    }
-
-    return signal;
+    // initiate new signal
+    return await signalSerivce.initiateSignalIfNotExist({ user });
   }
 
-  // turn off the current signal
+
+
   @Post("/turn-off")
-  async turnOffSignal(@CurrentUser() user: User): Promise<Signal> {
-    let signal;
-    try {
-      signal = await Signal.findOneBy({ user: { id: user.id } });
-    } catch (error) {
-      throw new HttpError(500, "Error finding signal");
-    }
-
-    if (!signal) {
-      throw new HttpError(404, "Signal not found");
-    }
-
-    signal.status = "inactive";
-    // delete all friend signals
-    await FriendSignal.delete({ signal: { id: signal.id } });
-
-    try {
-      await signal.save();
-    } catch (error) {
-      throw new HttpError(500, "Error saving signal");
-    }
+  async turnOffSignal(@CurrentUser() user: AppUser) {
+    const signalSerivce = new SignalService();
+    const mySignal = this.getMyCurrentSignal(user);
+    const signal = await signalSerivce.disactivateMySignal({
+      signalId: (await mySignal).id,
+    });
 
     return signal;
   }
 
-  // turn off the current signal
+
+
   @Put("/")
   async updateCurrentSignal(
     @CurrentUser() user: AppUser,
     @Body() body: UpdateSignalBody
   ) {
     const { friends } = body;
-    const signal = await Signal.findOneBy({ user: { id: user.id } });
+    const signal = await Signal.findOneByOrFail({ user: { id: user.id } });
+    const signalSerivce = new SignalService();
 
-    if (!signal) {
-      throw new HttpError(404, "Signal not found");
-    }
-
-    // delete all friend on the signals
+    // Reset friends assigned on my signal
     await FriendSignal.delete({ signal: { id: signal.id } });
+    await signalSerivce.addFriendsToMySignal({ friendIds: friends, user });
 
-    // add new friend to the signals
-    for (const friendId of friends) {
-      const friendship = await Friendship.findOneOrFail({
-        where: [{ user: { id: user.id }, friend: { id: friendId } }],
-      });
-      const friendSignal = FriendSignal.create({
-        friendship: { id: friendship.id },
-        signal: { id: signal.id },
-      });
-      await friendSignal.save();
-    }
-
-    signal.status_message = body.status_message;
+    signal.statusMessage = body.statusMessage;
     signal.when = body.when;
 
     await signal.save();
 
     // fetch friend signals
-    const newSignal = await Signal.findOneOrFail({
-      where: { user: { id: user.id } },
-      relations: ["friendSignal.friendship.friend"],
-    });
+    return await signalSerivce.getMySignalWithAssignedFriend(user);
 
-    const fetchUserPrincipal = await User.findOne({
-      select: ["principal"],
-      where: {
-        id: user.id,
-      },
-    });
-
-    if (user?.sub) {
-      const pointsService = new PointsServices();
-      pointsService.increaseUserPoints({
-        sub: user.sub,
-        points: friends.length * ACTIVITY_FRIENDS_POINTS,
-      });
-    }
-
-    const mySignal = {
-      ...newSignal,
-      friends: newSignal.friendSignal.map((friendSignal) => {
-        return {
-          friendId: friendSignal.friendship.friend.id,
-          username: friendSignal.friendship.friend.username,
-          names: friendSignal.friendship.friend.names,
-          profilePictureUrl: friendSignal.friendship.friend?.profilePictureUrl,
-        };
-      }),
-    };
-
-    mySignal.friendSignal = [];
-
-    return mySignal;
   }
 }

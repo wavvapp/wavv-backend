@@ -1,3 +1,1 @@
-export const ADD_FIRST_FRIEND_POINTS = 3;
-export const ACTIVITY_FRIENDS_POINTS = 0.5;
-export const USERNAME_UPDATE_POINTS = 1;
+export const SIGNAL_CREATION_POINTS = 1;
