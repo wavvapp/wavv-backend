@@ -21,6 +21,7 @@ import {
 } from "./middlewares/authorization";
 import { ErrorHandler } from "./middlewares/errorHandler";
 import EntityNotFoundHandler from "./middlewares/notFoundHandler";
+import { isDateExpired } from "./utils/isDateExpired";
 
 const app = express();
 const options: RoutingControllersOptions = {
@@ -56,6 +57,9 @@ const spec = routingControllersToSpec(storage, options, {
   // @ts-ignore
   components: { schemas },
 });
+
+
+console.log(isDateExpired(new Date("2024-12-22T01:00:00.000Z")))
 
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
