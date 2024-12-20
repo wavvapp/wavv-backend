@@ -27,7 +27,7 @@ export class Signal extends BaseEntity {
   statusMessage: string;
 
   @Column({ type: "time" })
-  endAt: Date
+  endsAt: Date
 
   @CreateDateColumn()
   createdAt: Date;
@@ -40,6 +40,6 @@ export class Signal extends BaseEntity {
 
 
   get hasEnded() {
-    return isDateExpired(this.endAt)
+    return isDateExpired(this.endsAt)
   }
 }

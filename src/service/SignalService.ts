@@ -5,7 +5,7 @@ import { FriendSignal } from "../entity/FriendSignal";
 import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
-import { getNext3AM } from "../utils/getNext3Am";
+import { getNext3AM } from "../utils/getNext3AM";
 import PointsServices from "./PointsServices";
 
 type AddFriendsToMySignalParams = {
@@ -29,6 +29,7 @@ class SignalService {
     if (signal) {
       const structuredSignalData = {
         ...signal,
+        hasEnded: signal.hasEnded,
         friends: signal.friendSignal.map((friendSignal) => {
           return {
             friendId: friendSignal.friendship.friend.id,
@@ -85,7 +86,7 @@ class SignalService {
         });
       }
 
-      mySignal.endAt = getNext3AM();
+      mySignal.endsAt = getNext3AM();
       await mySignal.save();
     }
 
@@ -94,7 +95,7 @@ class SignalService {
 
   async disactivateMySignal({ signalId }: { signalId: string }) {
     const now = new Date();
-    return await Signal.update({ id: signalId }, { endAt: now });
+    return await Signal.update({ id: signalId }, { endsAt: now });
   }
 
   async addFriendsToMySignal({ friendIds, user }: AddFriendsToMySignalParams) {
