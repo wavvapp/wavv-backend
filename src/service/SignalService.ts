@@ -1,8 +1,12 @@
+import { differenceInDays } from "date-fns";
+import { SIGNAL_ACTIVATION_POINTS } from "../constants/points";
 import { Friendship } from "../entity/Friendship";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
+import { getNext3AM } from "../utils/getNext3Am";
+import PointsServices from "./PointsServices";
 
 type AddFriendsToMySignalParams = {
   friendIds: string[];
@@ -10,6 +14,12 @@ type AddFriendsToMySignalParams = {
 };
 
 class SignalService {
+  protected pointsService: PointsServices;
+
+  constructor() {
+    this.pointsService = new PointsServices();
+  }
+
   async getMySignalWithAssignedFriend(user: AppUser) {
     const signal = await Signal.findOne({
       where: { user: { id: user.id } },
@@ -54,29 +64,42 @@ class SignalService {
     return mySignal;
   }
 
-  async activateMySignal({ signalId }: { signalId: string }) {
-    // TODO: This happenes once a day
+  async activateMySignal(user: AppUser) {
+    const mySignal = await Signal.findOneOrFail({
+      where: { user: { id: user.id } },
+    });
 
-    // const pointsService = new PointsServices();
-    //   pointsService.increaseUserPoints({
-    //     sub: user.sub,
-    //     points: friends.length * ACTIVITY_FRIENDS_POINTS,
-    //   });
+    if (mySignal.hasEnded) {
+      const isNextDay = differenceInDays(mySignal.updatedAt, new Date());
 
-    // TODO: Only if this signal has ended
-    const now = new Date();
-    return await Signal.update({ id: signalId }, { endAt: now });
+      /**
+       *
+       * You only the SIGNAL_ACTIVATION_POINTS per day
+       *
+       * */
+
+      if (isNextDay) {
+        await this.pointsService.increaseUserPoints({
+          sub: user.sub,
+          points: SIGNAL_ACTIVATION_POINTS,
+        });
+      }
+
+      mySignal.endAt = getNext3AM();
+      await mySignal.save();
+    }
+
+    return await this.getMySignalWithAssignedFriend(user);
   }
 
   async disactivateMySignal({ signalId }: { signalId: string }) {
-    // TODO: decrease the end date
     const now = new Date();
     return await Signal.update({ id: signalId }, { endAt: now });
   }
 
   async addFriendsToMySignal({ friendIds, user }: AddFriendsToMySignalParams) {
     const signal = await Signal.findOneByOrFail({ user: { id: user.id } });
-    
+
     for (const friendId of friendIds) {
       const friendship = await Friendship.findOneOrFail({
         where: [{ user: { id: user.id }, friend: { id: friendId } }],
@@ -86,7 +109,7 @@ class SignalService {
         friendship: { id: friendship.id },
         signal: { id: signal.id },
       });
-      
+
       await friendSignal.save();
     }
   }

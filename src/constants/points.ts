@@ -1,1 +1,1 @@
-export const SIGNAL_CREATION_POINTS = 1;
+export const SIGNAL_ACTIVATION_POINTS = 1;

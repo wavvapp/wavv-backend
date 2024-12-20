@@ -41,9 +41,9 @@ export class SignalController {
     const signalSerivce = new SignalService();
     const signal = await signalSerivce.getMySignalWithAssignedFriend(user);
 
-    // Re-activate user signal.
+    // Re-activate user signal if it was disactivated before.
     if (signal) {
-      await signalSerivce.activateMySignal({ signalId: signal.id });
+      await signalSerivce.activateMySignal(user);
     }
 
     // initiate new signal

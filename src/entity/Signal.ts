@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { isDateExpired } from "../utils/isDateExpired";
 import { FriendSignal } from "./FriendSignal";
 import { User } from "./User";
 
@@ -38,8 +39,7 @@ export class Signal extends BaseEntity {
   friendSignal: FriendSignal[];
 
 
-  hasEnded() {
-    const now =  new Date()
-    return 
+  get hasEnded() {
+    return isDateExpired(this.endAt)
   }
 }
