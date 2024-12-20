@@ -1,4 +1,5 @@
 import { IsNotEmpty } from "class-validator";
+import { toZonedTime } from "date-fns-tz";
 import {
   Authorized,
   Body,
@@ -10,6 +11,8 @@ import {
   Param,
   Post,
 } from "routing-controllers";
+import { MoreThan } from "typeorm";
+import { BERLIN_TIME } from "../constants/timezone";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Friendship } from "../entity/Friendship";
 import { Signal } from "../entity/Signal";
@@ -27,6 +30,7 @@ class CreateFriendSignalDto {
 export class FriendSignalController {
   @Get("/")
   async getAllFriendSignals(@CurrentUser() user: User): Promise<any[]> {
+    const nowInBerlin = toZonedTime(new Date(), BERLIN_TIME);
     const friendsSignals = await Friendship.find({
       relations: ["user", "friendSignal.signal"],
       where: {
@@ -35,6 +39,9 @@ export class FriendSignalController {
             friend: {
               id: user.id
             }
+          },
+          signal: {
+            endsAt: MoreThan(nowInBerlin)
           }
         }
       },
