@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { isDateExpired } from "../utils/isDateExpired";
 import { FriendSignal } from "./FriendSignal";
 import { User } from "./User";
 
@@ -20,13 +21,13 @@ export class Signal extends BaseEntity {
   user: User;
 
   @Column()
-  status: string;
-
-  @Column()
   when: string;
 
   @Column({ nullable: true })
-  status_message: string;
+  statusMessage: string;
+
+  @Column({ type: "timestamp with time zone", default: () => "CURRENT_TIMESTAMP" })
+  endsAt: Date
 
   @CreateDateColumn()
   createdAt: Date;
@@ -36,4 +37,9 @@ export class Signal extends BaseEntity {
 
   @OneToMany(() => FriendSignal, (friendSignal) => friendSignal.signal)
   friendSignal: FriendSignal[];
+
+
+  get hasEnded() {
+    return isDateExpired(this.endsAt)
+  }
 }

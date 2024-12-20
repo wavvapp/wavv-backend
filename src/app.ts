@@ -57,6 +57,7 @@ const spec = routingControllersToSpec(storage, options, {
   components: { schemas },
 });
 
+
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
 export default app;
