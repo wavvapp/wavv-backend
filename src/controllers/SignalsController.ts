@@ -31,32 +31,32 @@ class UpdateSignalBody {
 export class SignalController {
   @Get("/")
   async getMyCurrentSignal(@CurrentUser() user: AppUser) {
-    const signalSerivce = new SignalService();
-    return await signalSerivce.initiateSignalIfNotExist({ user });
+    const signalService = new SignalService();
+    return await signalService.initiateSignalIfNotExist({ user });
   }
 
 
   @Post("/turn-on")
   async turnOnSignal(@CurrentUser() user: AppUser) {
-    const signalSerivce = new SignalService();
-    const signal = await signalSerivce.getMySignalWithAssignedFriend(user);
+    const signalService = new SignalService();
+    const signal = await signalService.getMySignalWithAssignedFriend(user);
 
     // Re-activate user signal if it was disactivated before.
     if (signal) {
-      await signalSerivce.activateMySignal(user);
+      await signalService.activateMySignal(user);
     }
 
     // initiate new signal
-    return await signalSerivce.initiateSignalIfNotExist({ user });
+    return await signalService.initiateSignalIfNotExist({ user });
   }
 
 
 
   @Post("/turn-off")
   async turnOffSignal(@CurrentUser() user: AppUser) {
-    const signalSerivce = new SignalService();
+    const signalService = new SignalService();
     const mySignal = this.getMyCurrentSignal(user);
-    const signal = await signalSerivce.disactivateMySignal({
+    const signal = await signalService.disactivateMySignal({
       signalId: (await mySignal).id,
     });
 
@@ -72,11 +72,11 @@ export class SignalController {
   ) {
     const { friends } = body;
     const signal = await Signal.findOneByOrFail({ user: { id: user.id } });
-    const signalSerivce = new SignalService();
+    const signalService = new SignalService();
 
     // Reset friends assigned on my signal
     await FriendSignal.delete({ signal: { id: signal.id } });
-    await signalSerivce.addFriendsToMySignal({ friendIds: friends, user });
+    await signalService.addFriendsToMySignal({ friendIds: friends, user });
 
     signal.statusMessage = body.statusMessage;
     signal.when = body.when;
@@ -84,7 +84,7 @@ export class SignalController {
     await signal.save();
 
     // fetch friend signals
-    return await signalSerivce.getMySignalWithAssignedFriend(user);
+    return await signalService.getMySignalWithAssignedFriend(user);
 
   }
 }
