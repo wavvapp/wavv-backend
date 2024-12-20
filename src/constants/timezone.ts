@@ -1,1 +1,1 @@
-export const BERLIN_TIMEZONE = "Europe/Berlin"
+export const BERLIN_TIME = "Europe/Berlin"
