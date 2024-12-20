@@ -20,7 +20,7 @@ class UpdateSignalBody {
 
   @IsNotEmpty()
   @IsString()
-  statusMessage: string;
+  status_message: string;
 
   @IsNotEmpty()
   @IsString()
@@ -78,7 +78,7 @@ export class SignalController {
     await FriendSignal.delete({ signal: { id: signal.id } });
     await signalService.addFriendsToMySignal({ friendIds: friends, user });
 
-    signal.statusMessage = body.statusMessage;
+    signal.status_message = body.status_message;
     signal.when = body.when;
 
     await signal.save();

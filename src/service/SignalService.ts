@@ -56,7 +56,7 @@ class SignalService {
       const newSignal = new Signal();
       newSignal.user = currentUser;
       newSignal.when = "now";
-      newSignal.statusMessage = "available";
+      newSignal.status_message = "available";
       await newSignal.save();
 
       return { ...newSignal, friends: [] };
