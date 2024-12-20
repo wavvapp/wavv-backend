@@ -26,7 +26,7 @@ export class Signal extends BaseEntity {
   @Column({ nullable: true })
   statusMessage: string;
 
-  @Column({ type: "timestamp with time zone", default: "Now()" })
+  @Column({ type: "timestamp with time zone", default: () => "CURRENT_TIMESTAMP" })
   endsAt: Date
 
   @CreateDateColumn()
