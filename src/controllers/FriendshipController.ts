@@ -2,16 +2,15 @@ import { IsNotEmpty } from "class-validator";
 import {
   Body,
   CurrentUser,
-  Delete,
   Get,
   HttpError,
   JsonController,
-  Param,
   Post,
-  Put,
 } from "routing-controllers";
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
+import { FriendshipService } from "../service/FriendShipService";
+import { AppUser } from "../types/Auth";
 
 class CreateFriendshipDto {
   @IsNotEmpty()
@@ -25,40 +24,19 @@ class UpdateFriendshipDto {
 
 @JsonController("/api/friends")
 export class FriendshipController {
-  @Get()
+  @Get("/")
   async getAllFriendships(@CurrentUser() user: User): Promise<User[]> {
     const friendShips = await Friendship.find({
       where: { user: { id: user.id } },
       relations: ["friend"],
     });
 
-    const friends = friendShips.map(friendShip => friendShip.friend)
+    const friends = friendShips.map((friendShip) => friendShip.friend);
 
     return friends;
   }
 
-  @Get("/:id")
-  async getFriendship(
-    @Param("id") id: string,
-    @CurrentUser() user: User
-  ): Promise<Friendship> {
-    const friendship = await Friendship.findOne({
-      where: { id },
-      relations: ["user"],
-    });
-
-    if (!friendship) {
-      throw new HttpError(404, "Friendship not found");
-    }
-
-    if (friendship.user.id !== user.id && friendship.friend.id !== user.id) {
-      throw new HttpError(403, "Not authorized to view this friendship");
-    }
-
-    return friendship;
-  }
-
-  @Post()
+  @Post("/")
   async createFriendship(
     @Body() friendshipData: CreateFriendshipDto,
     @CurrentUser() user: User
@@ -81,64 +59,23 @@ export class FriendshipController {
     myFriendShip.friend = friend;
     myFriendShip.status = "pending";
 
-
     // Add my current profile in their friendship
     const theirFriendship = new Friendship();
     theirFriendship.user = friend;
     theirFriendship.friend = user;
     theirFriendship.status = "pending";
-     
-    await theirFriendship.save()
 
-    return await Friendship.save(myFriendShip);
+    await theirFriendship.save();
+    return await myFriendShip.save();
   }
 
-  @Put("/:id")
-  async updateFriendshipStatus(
-    @Param("id") id: string,
-    @Body() updateData: UpdateFriendshipDto,
-    @CurrentUser() user: User
-  ): Promise<Friendship> {
-    const friendship = await Friendship.findOne({
-      where: { id },
-      relations: ["user"],
-    });
+  @Post("/unfriend")
+  async unfriendFriendship(
+    @CurrentUser() currentUser: AppUser,
+    @Body({ validate: true, required: true }) body: { friendId: string }
+  ) {
+    await FriendshipService.unfriend({ friendId: body.friendId, currentUser });
 
-    if (!friendship) {
-      throw new HttpError(404, "Friendship not found");
-    }
-
-    if (friendship.friend.id !== user.id) {
-      throw new HttpError(403, "Not authorized to update this friendship");
-    }
-
-    const validStatuses = ["accepted", "rejected"];
-    if (!validStatuses.includes(updateData.status)) {
-      throw new HttpError(400, "Invalid status");
-    }
-
-    friendship.status = updateData.status;
-    return await Friendship.save(friendship);
-  }
-
-  @Delete("/:id")
-  async deleteFriendship(
-    @Param("id") id: string,
-    @CurrentUser() user: User
-  ): Promise<void> {
-    const friendship = await Friendship.findOne({
-      where: { id },
-      relations: ["user"],
-    });
-
-    if (!friendship) {
-      throw new HttpError(404, "Friendship not found");
-    }
-
-    if (friendship.user.id !== user.id && friendship.friend.id !== user.id) {
-      throw new HttpError(403, "Not authorized to delete this friendship");
-    }
-
-    await Friendship.remove(friendship);
+    return { message: "Friendship deleted successfully" };
   }
 }

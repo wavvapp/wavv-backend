@@ -1,4 +1,3 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { Response } from "express";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
@@ -8,127 +7,17 @@ import {
   CurrentUser,
   Get,
   JsonController,
-  Patch,
   Post,
-  Res,
+  Res
 } from "routing-controllers";
+import {
+  AuthSigninBody,
+  RefreshTokenBody
+} from "../dto/auth/login";
 import { User } from "../entity/User";
 import AuthService from "../service/AuthService";
 import PointsServices from "../service/PointsServices";
-import { AppUser, Provider } from "../types/Auth";
-
-class LoginBody {
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-
-  @IsNotEmpty()
-  @IsString()
-  password: string;
-}
-
-class RegisterBody {
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-
-  @IsNotEmpty()
-  @IsString()
-  password: string;
-
-  @IsNotEmpty()
-  @IsString()
-  names: string;
-}
-
-class ForgotPasswordBody {
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-}
-
-class ResetPasswordBody {
-  @IsNotEmpty()
-  @IsString()
-  password: string;
-
-  @IsNotEmpty()
-  @IsString()
-  token: string;
-}
-
-class ChangePasswordBody {
-  @IsNotEmpty()
-  @IsString()
-  oldPassword: string;
-
-  @IsNotEmpty()
-  @IsString()
-  newPassword: string;
-}
-
-class RefreshTokenBody {
-  @IsNotEmpty()
-  @IsString()
-  refresh_token: string;
-}
-
-class UpdateProfileBody {
-  @IsOptional()
-  @IsString()
-  names?: string;
-
-  @IsOptional()
-  @IsEmail()
-  email?: string;
-
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
-
-  @IsOptional()
-  @IsString()
-  location?: string;
-
-  @IsOptional()
-  @IsString()
-  bio?: string;
-
-  @IsOptional()
-  @IsString()
-  profilePictureUrl?: string;
-
-  @IsOptional()
-  @IsString()
-  username?: string;
-}
-
-class AuthSigninBody {
-  @IsNotEmpty()
-  @IsString()
-  token: string;
-
-  platform: "web" | "android" | "ios";
-
-  @IsOptional()
-  principal?: string;
-
-  @IsOptional()
-  @IsString()
-  username?: string;
-
-  @IsOptional()
-  @IsString()
-  provider?: Provider;
-
-  @IsString()
-  @IsOptional()
-  names: string;
-
-  @IsEmail()
-  @IsOptional()
-  email: string;
-}
+import { Provider } from "../types/Auth";
 
 @JsonController("/api/auth")
 export class AuthController {
@@ -178,44 +67,6 @@ export class AuthController {
           error["message"] || "Invalid or expired token. Please login again"
         );
     }
-  }
-
-  @Patch("/update-profile")
-  async updateProfile(
-    @Body({ required: false, validate: true }) body: UpdateProfileBody,
-    @CurrentUser({ required: true }) appUser: AppUser
-  ) {
-    // update profile logic
-    const {
-      names,
-      email,
-      phoneNumber,
-      location,
-      bio,
-      profilePictureUrl,
-      username,
-    } = body;
-
-    const data: Record<string, string | boolean> = {};
-
-    if (names) data.names = names;
-    if (email) data.email = email;
-    if (phoneNumber) data.phoneNumber = phoneNumber;
-    if (location) data.location = location;
-    if (bio) data.bio = bio;
-    if (profilePictureUrl) data.profilePictureUrl = profilePictureUrl;
-    if (username) {
-      data.username = username;
-      const usernameExist = await User.existsBy({ username });
-      if (usernameExist)
-        return new BadRequestError("Username is already taken");
-    }
-
-    await User.update(appUser.id, data);
-
-    return {
-      message: "Profile updated successfully.",
-    };
   }
 
   /*
@@ -457,7 +308,7 @@ export class AuthController {
       provider: user.provider,
       profilePictureUrl: user.profilePictureUrl,
       username: user.username,
-      sub: user.authId,
+      sub: user.authId
     };
 
     // generate access and refresh tokens

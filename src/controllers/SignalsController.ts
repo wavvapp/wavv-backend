@@ -32,14 +32,13 @@ export class SignalController {
   @Get("/")
   async getMyCurrentSignal(@CurrentUser() user: AppUser) {
     const signalService = new SignalService();
-    return await signalService.initiateSignalIfNotExist({ user });
+    return await signalService.getMySignalWithAssignedFriend(user);
   }
-
 
   @Post("/turn-on")
   async turnOnSignal(@CurrentUser() user: AppUser) {
     const signalService = new SignalService();
-    const signal = await signalService.getMySignalWithAssignedFriend(user);
+    const signal = await signalService.getMyCurrentSignal(user);
 
     // Re-activate user signal if it was disactivated before.
     if (signal) {
@@ -50,20 +49,14 @@ export class SignalController {
     return await signalService.initiateSignalIfNotExist({ user });
   }
 
-
-
   @Post("/turn-off")
   async turnOffSignal(@CurrentUser() user: AppUser) {
     const signalService = new SignalService();
-    const mySignal = this.getMyCurrentSignal(user);
-    const signal = await signalService.disactivateMySignal({
-      signalId: (await mySignal).id,
+    const mySignal = await signalService.getMyCurrentSignal(user);
+    return await signalService.disactivateMySignal({
+      signalId: mySignal?.id,
     });
-
-    return signal;
   }
-
-
 
   @Put("/")
   async updateCurrentSignal(
@@ -85,6 +78,6 @@ export class SignalController {
 
     // fetch friend signals
     return await signalService.getMySignalWithAssignedFriend(user);
-
   }
 }
+

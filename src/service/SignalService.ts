@@ -47,6 +47,12 @@ class SignalService {
     }
   }
 
+  async getMyCurrentSignal(user: AppUser) {
+    return await Signal.findOneOrFail({
+      where: { user: { id: user.id } },
+    });
+  }
+
   async initiateSignalIfNotExist({ user }: { user: AppUser }) {
     const mySignal = await this.getMySignalWithAssignedFriend(user);
 
@@ -113,6 +119,31 @@ class SignalService {
 
       await friendSignal.save();
     }
+  }
+
+  static async removeFriendsIfExistFromMySignal({
+    friendship,
+    user,
+  }: {
+    friendship: Friendship;
+    user: AppUser;
+  }) {
+    
+    const signal = await Signal.findOneBy({ user: { id: user.id } });
+
+    if (!signal) {
+      return;
+    }
+
+    const friendSignal = await FriendSignal.findOne({
+      where: { friendship: { id: friendship.id }, signal: { id: signal.id } },
+    });
+
+    if(!friendSignal) {
+      return;
+    }
+
+    await friendSignal.remove();
   }
 }
 

@@ -7,7 +7,7 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from "typeorm";
 import { Friendship } from "./Friendship";
 import { Signal } from "./Signal";
@@ -19,7 +19,7 @@ export class User extends BaseEntity {
 
   @Exclude()
   @Column({ nullable: true })
-  authId: string
+  authId: string;
 
   @Column()
   names: string;
@@ -49,7 +49,7 @@ export class User extends BaseEntity {
 
   @Exclude()
   @Column({ nullable: true })
-  principal: string
+  principal: string;
 
   @Column({ default: false })
   emailVerified: boolean;
@@ -81,4 +81,5 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Signal, (signal) => signal.user)
   signals: Signal[];
+
 }
