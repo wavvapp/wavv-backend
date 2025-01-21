@@ -1,32 +1,33 @@
+import dataSource from "../data-source";
 import { Friendship } from "../entity/Friendship";
-import { FriendSignal } from "../entity/FriendSignal";
 import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
 
 export class UserService {
   static async deleteMyAccount(user: AppUser) {
-    /**
-     * 
-     * Delete all friend signals where the user is the initiator.
-     *
-     */
-    await FriendSignal.delete({ friendship: { user: { id: user.id } } });
-    await Signal.delete({ user: { id: user.id } });
+    const queryRunner = dataSource.createQueryRunner();
+    await queryRunner.startTransaction();
+    let isDeleted = false;
 
-    /**
-     * 
-     * Delete all friendships where the user is the initiator or the friend.
-     * 
-     */
-    await Friendship.delete({ user: { id: user.id } });
-    await Friendship.delete({ friend: { id: user.id } });
+    try {
+      await queryRunner.manager.delete(Friendship, { user: { id: user.id } });
+      await queryRunner.manager.delete(Friendship, { friend: { id: user.id } });
 
-    /**
-     *
-     * Eventually, delete the user.
-     *
-     */
-    return await User.delete({ id: user.id });
+      await queryRunner.manager.delete(Signal, { user: { id: user.id } });
+
+      await queryRunner.manager.delete(User, { id: user.id });
+
+      await queryRunner.commitTransaction();
+      isDeleted = true;
+    } catch (err) {
+      console.error(err);
+      await queryRunner.rollbackTransaction();
+      isDeleted = false;
+    } finally {
+      await queryRunner.release();
+    }
+
+    return isDeleted;
   }
 }

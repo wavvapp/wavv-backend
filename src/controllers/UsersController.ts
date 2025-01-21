@@ -68,9 +68,10 @@ export class UsersController {
 
   @Delete("/")
   async deleteMyAccount(@CurrentUser() user: AppUser) {
-    await UserService.deleteMyAccount(user);
+    const isDelete = await UserService.deleteMyAccount(user);
     return {
-      message: "User deleted successfully",
+      message: "User has been deleted successfully",
+      isDelete
     };
   }
 

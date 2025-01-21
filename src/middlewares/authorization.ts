@@ -1,5 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Action, UnauthorizedError } from "routing-controllers";
+import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
 
 const isValid = (payload: JwtPayload) => {
@@ -30,8 +31,15 @@ export const currentUserChecker = async (
         const jwtPayload = decoded as JwtPayload;
         const userData = jwtPayload as AppUser;
 
+        
         if (userData) {
-          resolve(userData);
+          User.findOneBy({ id: userData.id }).then(user => {
+            if (user) {
+              resolve(userData);
+              return
+            }
+            resolve(null)
+          })
         } else {
           resolve(null);
         }

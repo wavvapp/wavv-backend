@@ -14,7 +14,7 @@ export class FriendSignal extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => Friendship, friendship => friendship.friendSignal )
+  @ManyToOne(() => Friendship, friendship => friendship.friendSignal, { onDelete: "CASCADE" })
   friendship: Friendship;
 
   @ManyToOne(() => Signal, (signal) => signal.friendSignal)
