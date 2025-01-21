@@ -9,12 +9,12 @@ import {
   JsonController,
   Patch,
   Post,
-  Res
+  Res,
 } from "routing-controllers";
 import {
   AuthSigninBody,
   RefreshTokenBody,
-  UpdateProfileBody
+  UpdateProfileBody,
 } from "../dto/auth/login";
 import { User } from "../entity/User";
 import AuthService from "../service/AuthService";
@@ -310,7 +310,7 @@ export class AuthController {
       provider: user.provider,
       profilePictureUrl: user.profilePictureUrl,
       username: user.username,
-      sub: user.authId
+      sub: user.authId,
     };
 
     // generate access and refresh tokens
@@ -328,47 +328,52 @@ export class AuthController {
     return { ...userData, access_token, refresh_token };
   }
 
-   @Patch("/update-profile")
-    async updateProfile(
-      @Body({ required: false, validate: true }) body: UpdateProfileBody,
-      @CurrentUser({ required: true }) appUser: AppUser
-    ) {
-      /**
-       *
-       * Update profile logic
-       *  
-       */ 
-      const {
-        names,
-        email,
-        phoneNumber,
-        location,
-        bio,
-        profilePictureUrl,
-        username,
-      } = body;
-  
-      const data: Record<string, string | boolean> = {};
-  
-      if (names) data.names = names;
-      if (email) data.email = email;
-      if (phoneNumber) data.phoneNumber = phoneNumber;
-      if (location) data.location = location;
-      if (bio) data.bio = bio;
-      if (profilePictureUrl) data.profilePictureUrl = profilePictureUrl;
-      if (username) {
-        data.username = username;
-        const usernameExist = await User.existsBy({ username });
-        if (usernameExist)
-          return new BadRequestError("Username is already taken");
-      }
-  
-      await User.update(appUser.id, data);
-  
-      return {
-        message: "Profile updated successfully.",
-      };
+   /*
+   *
+   * @deprecated
+   * Please use /users instead
+   */
+  @Patch("/update-profile")
+  async updateProfile(
+    @Body({ required: false, validate: true }) body: UpdateProfileBody,
+    @CurrentUser({ required: true }) appUser: AppUser
+  ) {
+    /**
+     *
+     * Update profile logic
+     *
+     */
+    const {
+      names,
+      email,
+      phoneNumber,
+      location,
+      bio,
+      profilePictureUrl,
+      username,
+    } = body;
+
+    const data: Record<string, string | boolean> = {};
+
+    if (names) data.names = names;
+    if (email) data.email = email;
+    if (phoneNumber) data.phoneNumber = phoneNumber;
+    if (location) data.location = location;
+    if (bio) data.bio = bio;
+    if (profilePictureUrl) data.profilePictureUrl = profilePictureUrl;
+    if (username) {
+      data.username = username;
+      const usernameExist = await User.existsBy({ username });
+      if (usernameExist)
+        return new BadRequestError("Username is already taken");
     }
+
+    await User.update(appUser.id, data);
+
+    return {
+      message: "Profile updated successfully.",
+    };
+  }
 
   @Get("/current-user")
   async me(@CurrentUser() user: User) {
