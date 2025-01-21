@@ -1,15 +1,21 @@
+import { IsUUID } from "class-validator";
 import { HttpError } from "routing-controllers";
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
 import SignalService from "./SignalService";
 
-type FriendshipOperationsParam = {
+class FriendshipOperationsParam  {
+  @IsUUID("4")
   friendId: string;
+  
   currentUser: AppUser;
 };
 export class FriendshipService {
   static async unfriend({ friendId, currentUser }: FriendshipOperationsParam) {
+    if (!IsUUID("4", {})) {
+      
+    }
 
     const friendship = await Friendship.findOneOrFail({
       where: [{ user: { id: currentUser.id }, friend: { id: friendId } }],
