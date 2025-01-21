@@ -7,17 +7,19 @@ import {
   CurrentUser,
   Get,
   JsonController,
+  Patch,
   Post,
   Res
 } from "routing-controllers";
 import {
   AuthSigninBody,
-  RefreshTokenBody
+  RefreshTokenBody,
+  UpdateProfileBody
 } from "../dto/auth/login";
 import { User } from "../entity/User";
 import AuthService from "../service/AuthService";
 import PointsServices from "../service/PointsServices";
-import { Provider } from "../types/Auth";
+import { AppUser, Provider } from "../types/Auth";
 
 @JsonController("/api/auth")
 export class AuthController {
@@ -325,6 +327,48 @@ export class AuthController {
 
     return { ...userData, access_token, refresh_token };
   }
+
+   @Patch("/update-profile")
+    async updateProfile(
+      @Body({ required: false, validate: true }) body: UpdateProfileBody,
+      @CurrentUser({ required: true }) appUser: AppUser
+    ) {
+      /**
+       *
+       * Update profile logic
+       *  
+       */ 
+      const {
+        names,
+        email,
+        phoneNumber,
+        location,
+        bio,
+        profilePictureUrl,
+        username,
+      } = body;
+  
+      const data: Record<string, string | boolean> = {};
+  
+      if (names) data.names = names;
+      if (email) data.email = email;
+      if (phoneNumber) data.phoneNumber = phoneNumber;
+      if (location) data.location = location;
+      if (bio) data.bio = bio;
+      if (profilePictureUrl) data.profilePictureUrl = profilePictureUrl;
+      if (username) {
+        data.username = username;
+        const usernameExist = await User.existsBy({ username });
+        if (usernameExist)
+          return new BadRequestError("Username is already taken");
+      }
+  
+      await User.update(appUser.id, data);
+  
+      return {
+        message: "Profile updated successfully.",
+      };
+    }
 
   @Get("/current-user")
   async me(@CurrentUser() user: User) {
