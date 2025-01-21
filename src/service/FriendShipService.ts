@@ -13,9 +13,6 @@ class FriendshipOperationsParam  {
 };
 export class FriendshipService {
   static async unfriend({ friendId, currentUser }: FriendshipOperationsParam) {
-    if (!IsUUID("4", {})) {
-      
-    }
 
     const friendship = await Friendship.findOneOrFail({
       where: [{ user: { id: currentUser.id }, friend: { id: friendId } }],
