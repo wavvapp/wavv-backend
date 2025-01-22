@@ -19,6 +19,7 @@ import {
 import { User } from "../entity/User";
 import AuthService from "../service/AuthService";
 import PointsServices from "../service/PointsServices";
+import SignalService from "../service/SignalService";
 import { AppUser, Provider } from "../types/Auth";
 
 @JsonController("/api/auth")
@@ -287,6 +288,9 @@ export class AuthController {
       const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
         expiresIn: "7d",
       });
+
+      const signalService = new SignalService()
+      await signalService.initiateSignalIfNotExist({ user: userData })
 
       return { ...userData, access_token, refresh_token };
     }

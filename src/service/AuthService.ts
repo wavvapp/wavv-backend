@@ -6,6 +6,7 @@ import { BadRequestError } from "routing-controllers";
 import { User } from "../entity/User";
 import { Provider } from "../types/Auth";
 import PointsServices from "./PointsServices";
+import SignalService from "./SignalService";
 
 type RequestBody = { names: string; email: string; username?: string };
 
@@ -100,6 +101,9 @@ class AuthService {
             const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
               expiresIn: "7d",
             });
+
+            const signalService = new SignalService()
+            await signalService.initiateSignalIfNotExist({ user: userData })
 
             return resolve({ access_token, refresh_token, ...userData });
           }
