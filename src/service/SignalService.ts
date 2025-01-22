@@ -53,6 +53,14 @@ class SignalService {
     });
   }
 
+  async hasSignal(user: AppUser) {
+    return  await Signal.existsBy({
+      user: {
+        id: user.id
+      }
+    })
+  }
+
   async initiateSignalIfNotExist({ user }: { user: AppUser }) {
     const mySignal = await this.getMySignalWithAssignedFriend(user);
 

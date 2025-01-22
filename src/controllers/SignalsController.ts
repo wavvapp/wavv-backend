@@ -38,10 +38,10 @@ export class SignalController {
   @Post("/turn-on")
   async turnOnSignal(@CurrentUser() user: AppUser) {
     const signalService = new SignalService();
-    const signal = await signalService.getMyCurrentSignal(user);
+    const useHasSignal = await signalService.hasSignal(user);
 
     // Re-activate user signal if it was disactivated before.
-    if (signal) {
+    if (useHasSignal) {
       await signalService.activateMySignal(user);
     }
 
