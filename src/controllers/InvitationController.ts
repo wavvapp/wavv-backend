@@ -1,4 +1,5 @@
 import { Body, CurrentUser, Get, JsonController, Post } from "routing-controllers";
+import { VerifyInvitationCode } from "../dto/invitation/verification";
 import { InvitationService } from "../service/InvitationService";
 import { AppUser } from "../types/Auth";
 
@@ -14,10 +15,10 @@ export class InvitationController {
 
   @Post("")
   async verifyInvitationCode(
-    @Body({ validate: true, required: true }) body: { invatationCode: number }
+    @Body({ validate: true, required: true }) body: VerifyInvitationCode
   ) {
     return {
-      isValid: InvitationService.verify(body.invatationCode),
+      isValid: InvitationService.verify(body.invitationCode),
     };
   }
 }
