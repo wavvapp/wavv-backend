@@ -290,7 +290,7 @@ export class AuthController {
       });
 
       const signalService = new SignalService()
-      await signalService.initiateSignalIfNotExist({ user: userData })
+      await signalService.initiateSignalIfNotExist({...userData, timezone: ""})
 
       return { ...userData, access_token, refresh_token };
     }

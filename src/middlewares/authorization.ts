@@ -1,5 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Action, UnauthorizedError } from "routing-controllers";
+import { BERLIN_TIME } from "../constants/timezone";
 import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
 
@@ -9,12 +10,17 @@ const isValid = (payload: JwtPayload) => {
   return expiresAt > now;
 };
 
+type Headers = {
+  "x-timezone": string,
+  authorization: string
+}
+
 export const currentUserChecker = async (
   action: Action
 ): Promise<AppUser | null> =>
   new Promise((resolve, reject) => {
     const request = action.request as Request;
-    const headers = request?.headers as { authorization?: string };
+    const headers = request?.headers as unknown as Headers;
 
     const token = headers["authorization"];
 
@@ -29,9 +35,9 @@ export const currentUserChecker = async (
         reject(new UnauthorizedError());
       } else {
         const jwtPayload = decoded as JwtPayload;
-        const userData = jwtPayload as AppUser;
+        const timezone = headers["x-timezone"] || BERLIN_TIME as string;
+        const userData = {...jwtPayload, timezone} as AppUser;
 
-        
         if (userData) {
           User.findOneBy({ id: userData.id }).then(user => {
             if (user) {

@@ -6,18 +6,17 @@ import {
   setSeconds,
 } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
-import { BERLIN_TIME } from "../constants/timezone";
 
-export function getNext3AM() {
+export function getNext3AM(timezone: string) {
 
-  const nowInBerlin = toZonedTime(new Date(), BERLIN_TIME);
+  const now = toZonedTime(new Date(), timezone);
 
-  let next3AM = setHours(nowInBerlin, 3);
+  let next3AM = setHours(now, 3);
   next3AM = setMinutes(next3AM, 0);
   next3AM = setSeconds(next3AM, 0);
   next3AM = setMilliseconds(next3AM, 0);
 
-  if (nowInBerlin > next3AM) {
+  if (now > next3AM) {
     next3AM = addDays(next3AM, 1);
   }
 

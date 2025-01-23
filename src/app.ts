@@ -12,6 +12,7 @@ import { AuthController } from "./controllers/AuthController";
 import { FriendshipController } from "./controllers/FriendshipController";
 import { FriendSignalController } from "./controllers/FriendSignalController";
 import { HomeController } from "./controllers/HomeController";
+import { InvitationController } from "./controllers/InvitationController";
 import { PointsController } from "./controllers/PointsController";
 import { SignalController } from "./controllers/SignalsController";
 import { UsersController } from "./controllers/UsersController";
@@ -35,6 +36,7 @@ const options: RoutingControllersOptions = {
     FriendshipController,
     SignalController,
     PointsController,
+    InvitationController
   ],
   cors: true,
 };

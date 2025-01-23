@@ -12,11 +12,11 @@ import {
   Post,
 } from "routing-controllers";
 import { MoreThan } from "typeorm";
-import { BERLIN_TIME } from "../constants/timezone";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Friendship } from "../entity/Friendship";
 import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
+import { AppUser } from "../types/Auth";
 
 class CreateFriendSignalDto {
   @IsNotEmpty()
@@ -29,8 +29,8 @@ class CreateFriendSignalDto {
 @Authorized()
 export class FriendSignalController {
   @Get("/")
-  async getAllFriendSignals(@CurrentUser() user: User): Promise<any[]> {
-    const nowInBerlin = toZonedTime(new Date(), BERLIN_TIME);
+  async getAllFriendSignals(@CurrentUser() user: AppUser): Promise<any[]> {
+    const now = toZonedTime(new Date(), user.timezone);
     const friendsSignals = await Friendship.find({
       relations: ["user", "friendSignal.signal"],
       where: {
@@ -41,7 +41,7 @@ export class FriendSignalController {
             }
           },
           signal: {
-            endsAt: MoreThan(nowInBerlin)
+            endsAt: MoreThan(now)
           }
         }
       },

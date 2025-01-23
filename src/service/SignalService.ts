@@ -1,10 +1,11 @@
 import { differenceInDays } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { SIGNAL_ACTIVATION_POINTS } from "../constants/points";
 import { Friendship } from "../entity/Friendship";
 import { FriendSignal } from "../entity/FriendSignal";
 import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
-import { AppUser } from "../types/Auth";
+import type { AppUser } from "../types/Auth";
 import { getNext3AM } from "../utils/getNext3AM";
 import PointsServices from "./PointsServices";
 
@@ -29,7 +30,7 @@ class SignalService {
     if (signal) {
       const structuredSignalData = {
         ...signal,
-        hasEnded: signal.hasEnded,
+        hasEnded: signal.hasEnded(user.timezone),
         friends: signal.friendSignal.map((friendSignal) => {
           return {
             friendId: friendSignal.friendship.friend.id,
@@ -54,14 +55,14 @@ class SignalService {
   }
 
   async hasSignal(user: AppUser) {
-    return  await Signal.existsBy({
+    return await Signal.existsBy({
       user: {
-        id: user.id
-      }
-    })
+        id: user.id,
+      },
+    });
   }
 
-  async initiateSignalIfNotExist({ user }: { user: AppUser }) {
+  async initiateSignalIfNotExist(user: AppUser) {
     const mySignal = await this.getMySignalWithAssignedFriend(user);
 
     if (!mySignal) {
@@ -84,23 +85,27 @@ class SignalService {
       where: { user: { id: user.id } },
     });
 
-    if (mySignal.hasEnded) {
-      const isNextDay = differenceInDays(mySignal.updatedAt, new Date());
+    const hasEnded = mySignal.hasEnded(user.timezone);
+
+    if (hasEnded) {
+      const now = toZonedTime(new Date(), user.timezone);
+      const isNextDay = differenceInDays(mySignal.activatedAt, now);
 
       /**
        *
        * You only the SIGNAL_ACTIVATION_POINTS per day
        *
-       * */
+       */
 
-      if (isNextDay) {
+      // if (isNextDay) {
         await this.pointsService.increaseUserPoints({
           sub: user.sub,
           points: SIGNAL_ACTIVATION_POINTS,
         });
-      }
+      // }
 
-      mySignal.endsAt = getNext3AM();
+      mySignal.activatedAt = now;
+      mySignal.endsAt = getNext3AM(user.timezone);
       await mySignal.save();
     }
 
@@ -136,7 +141,6 @@ class SignalService {
     friendship: Friendship;
     user: AppUser;
   }) {
-    
     const signal = await Signal.findOneBy({ user: { id: user.id } });
 
     if (!signal) {
@@ -147,7 +151,7 @@ class SignalService {
       where: { friendship: { id: friendship.id }, signal: { id: signal.id } },
     });
 
-    if(!friendSignal) {
+    if (!friendSignal) {
       return;
     }
 

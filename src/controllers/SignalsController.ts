@@ -46,7 +46,7 @@ export class SignalController {
     }
 
     // initiate new signal
-    return await signalService.initiateSignalIfNotExist({ user });
+    return await signalService.initiateSignalIfNotExist({ ...user, timezone: "" });
   }
 
   @Post("/turn-off")

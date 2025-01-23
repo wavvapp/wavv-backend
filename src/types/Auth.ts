@@ -5,7 +5,8 @@ export type AppUser = {
   phoneNumber?: string;
   emailVerified?: boolean;
   profilePictureUrl?: string;
-  sub: string
+  sub: string;
+  timezone: string;
 };
 
 

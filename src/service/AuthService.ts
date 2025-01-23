@@ -103,7 +103,7 @@ class AuthService {
             });
 
             const signalService = new SignalService()
-            await signalService.initiateSignalIfNotExist({ user: userData })
+            await signalService.initiateSignalIfNotExist({...userData, timezone: ""})
 
             return resolve({ access_token, refresh_token, ...userData });
           }
