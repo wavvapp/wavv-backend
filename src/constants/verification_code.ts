@@ -1,0 +1,1 @@
+export const VERIFICATION_CODE =963021;
