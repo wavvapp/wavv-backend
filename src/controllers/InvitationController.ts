@@ -1,10 +1,11 @@
-import { Body, Get, JsonController, Post } from "routing-controllers";
+import { Body, CurrentUser, Get, JsonController, Post } from "routing-controllers";
 import { InvitationService } from "../service/InvitationService";
+import { AppUser } from "../types/Auth";
 
 @JsonController("/api/invitations")
 export class InvitationController {
   @Get("")
-  async getInvitationCode() {
+  async getInvitationCode(@CurrentUser() user: AppUser) {
     const invitationCode = InvitationService.generate();
     return {
       invitationCode,
