@@ -13,7 +13,7 @@ export class InvitationController {
     };
   }
 
-  @Post("")
+  @Post("/verify")
   async verifyInvitationCode(
     @Body({ validate: true, required: true }) body: VerifyInvitationCode
   ) {
