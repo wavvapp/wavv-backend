@@ -97,14 +97,15 @@ class SignalService {
        *
        */
 
-      // if (isNextDay) {
+      if (isNextDay) {
         await this.pointsService.increaseUserPoints({
           sub: user.sub,
           points: SIGNAL_ACTIVATION_POINTS,
         });
-      // }
+        
+        mySignal.activatedAt = now;
+      }
 
-      mySignal.activatedAt = now;
       mySignal.endsAt = getNext3AM(user.timezone);
       await mySignal.save();
     }
