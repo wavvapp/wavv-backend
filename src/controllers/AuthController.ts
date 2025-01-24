@@ -300,7 +300,7 @@ export class AuthController {
         ...userData,
         access_token,
         refresh_token,
-        invitationCode: InvitationService.generate(),
+        inviteCode: InvitationService.generate(),
       };
     }
 

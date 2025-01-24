@@ -5,6 +5,7 @@ import { CertSigningKey, JwksClient, RsaSigningKey } from "jwks-rsa";
 import { BadRequestError } from "routing-controllers";
 import { User } from "../entity/User";
 import { Provider } from "../types/Auth";
+import { InvitationService } from "./InvitationService";
 import PointsServices from "./PointsServices";
 import SignalService from "./SignalService";
 
@@ -105,7 +106,7 @@ class AuthService {
             const signalService = new SignalService()
             await signalService.initiateSignalIfNotExist({...userData, timezone: ""})
 
-            return resolve({ access_token, refresh_token, ...userData });
+            return resolve({ access_token, refresh_token, ...userData, inviteCode: InvitationService.generate() });
           }
 
           const userData = {
@@ -128,7 +129,7 @@ class AuthService {
             expiresIn: "7d",
           });
 
-          return resolve({ access_token, refresh_token, ...userData });
+          return resolve({ access_token, refresh_token, ...userData, inviteCode: InvitationService.generate() });
         }
       );
     });
