@@ -18,6 +18,7 @@ import {
 } from "../dto/auth/login";
 import { User } from "../entity/User";
 import AuthService from "../service/AuthService";
+import { InvitationService } from "../service/InvitationService";
 import PointsServices from "../service/PointsServices";
 import SignalService from "../service/SignalService";
 import { AppUser, Provider } from "../types/Auth";
@@ -289,10 +290,18 @@ export class AuthController {
         expiresIn: "7d",
       });
 
-      const signalService = new SignalService()
-      await signalService.initiateSignalIfNotExist({...userData, timezone: ""})
+      const signalService = new SignalService();
+      await signalService.initiateSignalIfNotExist({
+        ...userData,
+        timezone: "",
+      });
 
-      return { ...userData, access_token, refresh_token };
+      return {
+        ...userData,
+        access_token,
+        refresh_token,
+        invitationCode: InvitationService.generate(),
+      };
     }
 
     if (!user.authId) {
@@ -332,7 +341,7 @@ export class AuthController {
     return { ...userData, access_token, refresh_token };
   }
 
-   /*
+  /*
    *
    * @deprecated
    * Please use /users instead

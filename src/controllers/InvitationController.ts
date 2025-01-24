@@ -1,5 +1,5 @@
 import { Body, CurrentUser, Get, JsonController, Post } from "routing-controllers";
-import { VerifyInvitationCode } from "../dto/invitation/verification";
+import { VerifyInvitationCode } from "../dto/invitation";
 import { InvitationService } from "../service/InvitationService";
 import { AppUser } from "../types/Auth";
 
