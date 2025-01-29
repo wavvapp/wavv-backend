@@ -338,7 +338,7 @@ export class AuthController {
     const pointsService = new PointsServices();
     pointsService.registerUserOnCanister({ sub: payload.sub });
 
-    return { ...userData, access_token, refresh_token };
+    return { ...userData, access_token, refresh_token, inviteCode: InvitationService.generate() };
   }
 
   /*
