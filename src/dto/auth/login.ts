@@ -1,5 +1,6 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { Provider } from "../../types/Auth";
+import { Preferance } from "../../types/User";
 
 export class LoginBody {
   @IsNotEmpty()
@@ -85,6 +86,13 @@ export class UpdateProfileBody {
   @IsOptional()
   @IsString()
   username?: string;
+
+  @IsOptional()
+  preferances?: Preferance;
+
+  @IsOptional()
+  @IsString()
+  notificationToken?: string
 }
 
 export class AuthSigninBody {

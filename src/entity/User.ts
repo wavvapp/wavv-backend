@@ -7,9 +7,11 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from "typeorm";
+import { Preferance } from "../types/User";
 import { Friendship } from "./Friendship";
+import { Notification } from "./Notification";
 import { Signal } from "./Signal";
 
 @Entity()
@@ -70,6 +72,12 @@ export class User extends BaseEntity {
   @Column({ default: false })
   profileStatus: Boolean;
 
+  @Column({ type: "jsonb", nullable: true })
+  preferances: Preferance;
+
+  @Column({ nullable: true })
+  notificationToken: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -82,4 +90,8 @@ export class User extends BaseEntity {
   @OneToMany(() => Signal, (signal) => signal.user)
   signals: Signal[];
 
+  @OneToMany(() => Notification, (notification) => notification.user, {
+    nullable: true,
+  })
+  notifications?: Notification[];
 }

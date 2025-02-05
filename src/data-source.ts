@@ -3,6 +3,7 @@ import { DataSource, DataSourceOptions } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import { Friendship } from "./entity/Friendship";
 import { FriendSignal } from "./entity/FriendSignal";
+import { Notification } from "./entity/Notification";
 import { Signal } from "./entity/Signal";
 import { User } from "./entity/User";
 
@@ -16,7 +17,7 @@ export const dataSourceOptions: DataSourceOptions = {
   url: process.env.DATABASE_URL,
   migrationsTransactionMode: "each",
   namingStrategy: new SnakeNamingStrategy(),
-  entities: [User, Friendship, Signal, FriendSignal],
+  entities: [User, Friendship, Signal, FriendSignal, Notification],
   migrationsRun: false,
   migrations: MIGRATION_FILES,
   synchronize: false,

@@ -71,7 +71,7 @@ export class UsersController {
     const isDeleted = await UserService.deleteMyAccount(user);
     return {
       message: "User has been deleted successfully",
-      isDeleted
+      isDeleted,
     };
   }
 
@@ -83,8 +83,8 @@ export class UsersController {
     /**
      *
      * Update profile logic
-     *  
-     */ 
+     *
+     */
     const {
       names,
       email,
@@ -93,9 +93,11 @@ export class UsersController {
       bio,
       profilePictureUrl,
       username,
+      preferances,
+      notificationToken
     } = body;
 
-    const data: Record<string, string | boolean> = {};
+    const data: Record<string, string | boolean | object> = {};
 
     if (names) data.names = names;
     if (email) data.email = email;
@@ -108,6 +110,20 @@ export class UsersController {
       const usernameExist = await User.existsBy({ username });
       if (usernameExist)
         return new BadRequestError("Username is already taken");
+    }
+
+    if (preferances) {
+      const allowNotification = preferances.allowNotification;
+      const preferance = {
+        allowNotification,
+      };
+
+      if(allowNotification && !notificationToken) {
+        return new BadRequestError("NotificationToken, required");
+      }
+
+      data.notificationToken = notificationToken || ""
+      data.preferances = preferance;
     }
 
     await User.update(appUser.id, data);
