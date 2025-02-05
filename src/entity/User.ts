@@ -92,6 +92,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Notification, (notification) => notification.user, {
     nullable: true,
+    onDelete: "CASCADE"
   })
   notifications?: Notification[];
 }

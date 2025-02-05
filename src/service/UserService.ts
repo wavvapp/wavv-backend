@@ -30,4 +30,8 @@ export class UserService {
 
     return isDeleted;
   }
+
+  static async getUserById(userId: string) {
+    return await User.findOneBy({ id: userId })
+  }
 }

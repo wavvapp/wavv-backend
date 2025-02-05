@@ -7,6 +7,7 @@ import { Signal } from "../entity/Signal";
 import { User } from "../entity/User";
 import type { AppUser } from "../types/Auth";
 import { getNext3AM } from "../utils/getNext3AM";
+import { NotificationService } from "./NotificationService";
 import PointsServices from "./PointsServices";
 
 type AddFriendsToMySignalParams = {
@@ -16,6 +17,8 @@ type AddFriendsToMySignalParams = {
 
 class SignalService {
   protected pointsService: PointsServices;
+  notificationService = new NotificationService()
+
 
   constructor() {
     this.pointsService = new PointsServices();
@@ -120,19 +123,25 @@ class SignalService {
 
   async addFriendsToMySignal({ friendIds, user }: AddFriendsToMySignalParams) {
     const signal = await Signal.findOneByOrFail({ user: { id: user.id } });
+    const friendsOnSignal: User[] = []  
 
     for (const friendId of friendIds) {
       const friendship = await Friendship.findOneOrFail({
+        select: ["user", "friend", "id"],
         where: [{ user: { id: user.id }, friend: { id: friendId } }],
       });
+
+      friendsOnSignal.push(friendship.friend)
 
       const friendSignal = FriendSignal.create({
         friendship: { id: friendship.id },
         signal: { id: signal.id },
       });
-
+      
       await friendSignal.save();
     }
+
+    await this.notificationService.sendSignalNotificationTo(friendsOnSignal, signal);
   }
 
   static async removeFriendsIfExistFromMySignal({
