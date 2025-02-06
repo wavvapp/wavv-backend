@@ -85,6 +85,7 @@ class SignalService {
 
   async activateMySignal(user: AppUser) {
     const mySignal = await Signal.findOneOrFail({
+      select: ["user", "activatedAt", "endsAt"],
       where: { user: { id: user.id } },
     });
 
@@ -102,7 +103,7 @@ class SignalService {
 
       if (isNextDay) {
         await this.pointsService.increaseUserPoints({
-          sub: user.sub,
+          sub: mySignal.user.authId,
           points: SIGNAL_ACTIVATION_POINTS,
         });
         
