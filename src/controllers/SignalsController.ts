@@ -46,7 +46,10 @@ export class SignalController {
     }
 
     // initiate new signal
-    return await signalService.initiateSignalIfNotExist({ ...user, timezone: "" });
+    return await signalService.initiateSignalIfNotExist({
+      ...user,
+      timezone: "",
+    });
   }
 
   @Post("/turn-off")
@@ -69,15 +72,15 @@ export class SignalController {
 
     // Reset friends assigned on my signal
     await FriendSignal.delete({ signal: { id: signal.id } });
-    await signalService.addFriendsToMySignal({ friendIds: friends, user });
 
     signal.status_message = body.status_message;
     signal.when = body.when;
 
     await signal.save();
 
+    await signalService.addFriendsToMySignal({ friendIds: friends, user });
+
     // fetch friend signals
     return await signalService.getMySignalWithAssignedFriend(user);
   }
 }
-

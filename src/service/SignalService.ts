@@ -17,8 +17,7 @@ type AddFriendsToMySignalParams = {
 
 class SignalService {
   protected pointsService: PointsServices;
-  notificationService = new NotificationService()
-
+  notificationService = new NotificationService();
 
   constructor() {
     this.pointsService = new PointsServices();
@@ -85,10 +84,11 @@ class SignalService {
 
   async activateMySignal(user: AppUser) {
     const mySignal = await Signal.findOneOrFail({
-      select: ["user", "activatedAt", "endsAt"],
+      select: ["user", "activatedAt", "endsAt", "id"],
       where: { user: { id: user.id } },
     });
 
+    const userInfo = await User.findOneByOrFail({ id: user.id });
     const hasEnded = mySignal.hasEnded(user.timezone);
 
     if (hasEnded) {
@@ -103,10 +103,10 @@ class SignalService {
 
       if (isNextDay) {
         await this.pointsService.increaseUserPoints({
-          sub: mySignal.user.authId,
+          sub: userInfo.authId,
           points: SIGNAL_ACTIVATION_POINTS,
         });
-        
+
         mySignal.activatedAt = now;
       }
 
@@ -124,25 +124,32 @@ class SignalService {
 
   async addFriendsToMySignal({ friendIds, user }: AddFriendsToMySignalParams) {
     const signal = await Signal.findOneByOrFail({ user: { id: user.id } });
-    const friendsOnSignal: User[] = []  
+    const friendsOnSignal: User[] = [];
 
-    for (const friendId of friendIds) {
+    for await (const friendId of friendIds) {
       const friendship = await Friendship.findOneOrFail({
-        select: ["user", "friend", "id"],
         where: [{ user: { id: user.id }, friend: { id: friendId } }],
       });
 
-      friendsOnSignal.push(friendship.friend)
+      const friend = await User.findOneByOrFail({ id: friendId });
+      friendsOnSignal.push(friend);
 
       const friendSignal = FriendSignal.create({
         friendship: { id: friendship.id },
         signal: { id: signal.id },
       });
-      
+
       await friendSignal.save();
     }
 
-    await this.notificationService.sendSignalNotificationTo(friendsOnSignal, signal);
+    await this.notificationService.sendSignalNotificationTo(
+      friendsOnSignal,
+      user,
+      {
+        statusMessage: signal.status_message,
+        when: signal.when,
+      }
+    );
   }
 
   static async removeFriendsIfExistFromMySignal({
