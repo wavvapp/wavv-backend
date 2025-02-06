@@ -10,9 +10,7 @@ type NotificationMessage = {
 };
 
 export class NotificationService {
-  expo = new Expo({
-    accessToken: process.env.EXPO_ACCESS_TOKEN,
-  });
+  expo = new Expo();
   userService = new UserService();
 
   async sendSignalNotificationTo(friends: User[], signal: Signal) {
