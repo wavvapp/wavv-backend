@@ -5,34 +5,42 @@ import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
 import SignalService from "./SignalService";
 
-class FriendshipOperationsParam  {
+class FriendshipOperationsParam {
   @IsUUID("4")
   friendId: string;
-  
+
   currentUser: AppUser;
+}
+
+type DisableOrEnableNotificationParms = {
+  currentUser: AppUser;
+  friendId: string;
+  hasNotificationEnabled: boolean;
 };
 export class FriendshipService {
   static async unfriend({ friendId, currentUser }: FriendshipOperationsParam) {
-
     const friendship = await Friendship.findOneOrFail({
       where: [{ user: { id: currentUser.id }, friend: { id: friendId } }],
     });
 
-    await SignalService.removeFriendsIfExistFromMySignal({ friendship, user: currentUser  });
-    
+    await SignalService.removeFriendsIfExistFromMySignal({
+      friendship,
+      user: currentUser,
+    });
+
     return await Friendship.delete({ id: friendship.id });
   }
 
-  static async createFriendship({ friendId, currentUser }: FriendshipOperationsParam) {
-    
+  static async createFriendship({
+    friendId,
+    currentUser,
+  }: FriendshipOperationsParam) {
     const user = await User.findOneByOrFail({ id: currentUser.id });
-    
+
     const existingFriendship = await this.checkIfWeAreFriends({
       friendId,
-       currentUser,
+      currentUser,
     });
-
-
 
     if (existingFriendship) {
       throw new HttpError(400, "Friendship already exists");
@@ -64,5 +72,31 @@ export class FriendshipService {
     return await Friendship.findOne({
       where: [{ user: { id: currentUser.id }, friend: { id: friendId } }],
     });
+  }
+
+  static async disableOrEnableNotification({
+    currentUser,
+    friendId,
+    hasNotificationEnabled,
+  }: DisableOrEnableNotificationParms) {
+    const friendShip = await Friendship.findOneByOrFail({
+      user: { id: currentUser.id },
+      friend: { id: friendId },
+    });
+
+    friendShip.hasNotificationEnabled = hasNotificationEnabled;
+
+    return await friendShip.save();
+  }
+
+  // TODO:
+  static async checkIfWhoAddedAndAcceptsMyNotification(friendId: string, currentUser: AppUser) {
+    // Check where I am a friend if they accept my notification
+    const friendShip = await Friendship.findOneByOrFail({
+      user: { id: friendId },
+      friend: { id: currentUser.id },
+    });
+
+    return friendShip.hasNotificationEnabled;
   }
 }

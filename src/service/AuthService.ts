@@ -61,7 +61,7 @@ class AuthService {
             newUser.names = names;
             newUser.username = username || "";
             newUser.provider = Provider.APPLE;
-            newUser.authId =  decodeData.sub;
+            newUser.authId = decodeData.sub;
 
             /**
              *
@@ -76,7 +76,9 @@ class AuthService {
             }
 
             if (!names) {
-              return response.status(400).json({message: "Name is required property."});
+              return response
+                .status(400)
+                .json({ message: "Name is required property." });
             }
 
             this.pointsService.registerUserOnCanister({ sub: decodeData.sub });
@@ -103,10 +105,18 @@ class AuthService {
               expiresIn: "7d",
             });
 
-            const signalService = new SignalService()
-            await signalService.initiateSignalIfNotExist({...userData, timezone: ""})
+            const signalService = new SignalService();
+            await signalService.initiateSignalIfNotExist({
+              ...userData,
+              timezone: "",
+            });
 
-            return resolve({ access_token, refresh_token, ...userData, inviteCode: InvitationService.generate() });
+            return resolve({
+              access_token,
+              refresh_token,
+              ...userData,
+              inviteCode: InvitationService.generate(),
+            });
           }
 
           const userData = {
@@ -129,11 +139,22 @@ class AuthService {
             expiresIn: "7d",
           });
 
-          return resolve({ access_token, refresh_token, ...userData, inviteCode: InvitationService.generate() });
+          return resolve({
+            access_token,
+            refresh_token,
+            ...userData,
+            inviteCode: InvitationService.generate(),
+          });
         }
       );
     });
   }
+
+  private async handleGoogleSignin(
+    token: string,
+    bodyPaylod: RequestBody,
+    response: Response
+  ) {}
 
   private getKey(header: JwtHeader, callback: SigningKeyCallback) {
     client.getSigningKey(header.kid, (err, key) => {
@@ -154,6 +175,10 @@ class AuthService {
   ) {
     if (provider === Provider.APPLE) {
       return await this.handleAppleSignin(this.token, requestBody, response);
+    }
+
+    if (provider === Provider.GOOGLE) {
+      return await this.handleGoogleSignin(this.token, requestBody, response)
     }
   }
 }

@@ -28,6 +28,9 @@ export class Friendship extends BaseEntity {
   @Column()
   status: string;
 
+  @Column({ default: false })
+  hasNotificationEnabled: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

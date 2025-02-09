@@ -7,6 +7,7 @@ import {
   JsonController,
   Post,
 } from "routing-controllers";
+import { UpdateNotificationSettingsDto } from "../dto/friendship/UpdateNotificationSettingsDto";
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
 import { FriendshipService } from "../service/FriendShipService";
@@ -77,5 +78,24 @@ export class FriendshipController {
     await FriendshipService.unfriend({ friendId: body.friendId, currentUser });
 
     return { message: "Friendship deleted successfully" };
+  }
+
+  @Post("/notification")
+  async enableOrDisableNotification(
+    @CurrentUser() currentUser: AppUser,
+    @Body({ validate: true, required: true })
+    body: UpdateNotificationSettingsDto
+  ) {
+    await FriendshipService.disableOrEnableNotification({
+      currentUser,
+      hasNotificationEnabled: body.enableNotification,
+      friendId: body.friendId,
+    });
+
+    return {
+      message: `Notification has been ${
+        body.enableNotification ? "enabled" : "disabled"
+      }. `,
+    };
   }
 }
