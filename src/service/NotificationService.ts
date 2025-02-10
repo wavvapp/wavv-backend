@@ -1,6 +1,7 @@
 import Expo, { ExpoPushMessage } from "expo-server-sdk";
 import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
+import { FriendshipService } from "./FriendShipService";
 import { UserService } from "./UserService";
 
 export class NotificationService {
@@ -18,10 +19,16 @@ export class NotificationService {
     const messages: ExpoPushMessage[] = [];
     const currentUserInfo = await User.findOneByOrFail({ id: currentUser.id });
 
-    for await (const user of friends) {
-      const token = user?.notificationToken;
+    for await (const friend of friends) {
+      const token = friend?.notificationToken;
 
-      if (token) {
+      const hasFriendAcceptedNotificationFromMe =
+        await FriendshipService.checkIfFriendAcceptsMyNotification(
+          friend.id,
+          currentUser
+        );
+
+      if (token && hasFriendAcceptedNotificationFromMe) {
         messages.push({
           to: token,
           sound: "default",

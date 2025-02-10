@@ -1,10 +1,11 @@
-import { IsNotEmpty } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsOptional } from "class-validator";
 import {
   Body,
   CurrentUser,
   Get,
   HttpError,
   JsonController,
+  Patch,
   Post,
 } from "routing-controllers";
 import { UpdateNotificationSettingsDto } from "../dto/friendship/UpdateNotificationSettingsDto";
@@ -16,11 +17,10 @@ import { AppUser } from "../types/Auth";
 class CreateFriendshipDto {
   @IsNotEmpty()
   friendId: string;
-}
 
-class UpdateFriendshipDto {
-  @IsNotEmpty()
-  status: string;
+  @IsBoolean()
+  @IsOptional()
+  hasNotificationEnabled?: boolean
 }
 
 @JsonController("/api/friends")
@@ -59,6 +59,10 @@ export class FriendshipController {
     myFriendShip.user = user;
     myFriendShip.friend = friend;
     myFriendShip.status = "pending";
+    
+    if(myFriendShip.hasNotificationEnabled){
+      myFriendShip.hasNotificationEnabled = true;
+    }
 
     // Add my current profile in their friendship
     const theirFriendship = new Friendship();
@@ -80,8 +84,8 @@ export class FriendshipController {
     return { message: "Friendship deleted successfully" };
   }
 
-  @Post("/notification")
-  async enableOrDisableNotification(
+  @Patch("/notification/settings")
+  async updateNotificationSettings(
     @CurrentUser() currentUser: AppUser,
     @Body({ validate: true, required: true })
     body: UpdateNotificationSettingsDto
@@ -93,9 +97,10 @@ export class FriendshipController {
     });
 
     return {
-      message: `Notification has been ${
+      success: true,
+      message: `Notifications have been ${
         body.enableNotification ? "enabled" : "disabled"
-      }. `,
+      }.`,
     };
   }
 }

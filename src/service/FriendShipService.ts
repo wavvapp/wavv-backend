@@ -17,6 +17,8 @@ type DisableOrEnableNotificationParms = {
   friendId: string;
   hasNotificationEnabled: boolean;
 };
+
+
 export class FriendshipService {
   static async unfriend({ friendId, currentUser }: FriendshipOperationsParam) {
     const friendship = await Friendship.findOneOrFail({
@@ -89,9 +91,14 @@ export class FriendshipService {
     return await friendShip.save();
   }
 
-  // TODO:
-  static async checkIfWhoAddedAndAcceptsMyNotification(friendId: string, currentUser: AppUser) {
-    // Check where I am a friend if they accept my notification
+  static async checkIfFriendAcceptsMyNotification(
+    friendId: string,
+    currentUser: AppUser
+  ) {
+
+    /**
+     * Checks if the friend has given consent to receive notifications from me.
+     */
     const friendShip = await Friendship.findOneByOrFail({
       user: { id: friendId },
       friend: { id: currentUser.id },

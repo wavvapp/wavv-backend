@@ -38,6 +38,7 @@ class SignalService {
             friendId: friendSignal.friendship.friend.id,
             username: friendSignal.friendship.friend.username,
             names: friendSignal.friendship.friend.names,
+            hasNotificationEnabled: friendSignal.friendship.hasNotificationEnabled,
             profilePictureUrl:
               friendSignal.friendship.friend?.profilePictureUrl,
           };
