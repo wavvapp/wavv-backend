@@ -114,7 +114,6 @@ export class AuthSigninBody {
   provider?: Provider;
 
   @IsString()
-  @IsOptional()
   names: string;
 
   @IsEmail()

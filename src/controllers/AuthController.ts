@@ -121,8 +121,8 @@ export class AuthController {
 
       if (!payload.email) throw new BadRequestError("Email is required");
 
-      newUser.email = payload.email || "";
-      newUser.names = payload.name || "";
+      newUser.email = payload.email;
+      newUser.names = body.names;
       newUser.profilePictureUrl = payload.picture || "";
       newUser.username = body.username || "";
       newUser.provider = "google";
@@ -246,14 +246,12 @@ export class AuthController {
 
       if (!payload.email) throw new BadRequestError("Email is required");
 
-      newUser.email = payload.email || "";
-      newUser.names = payload.name || "";
+      newUser.email = payload.email;
+      newUser.names = body.names;
       newUser.profilePictureUrl = payload.picture || "";
       newUser.username = body.username || "";
       newUser.provider = "google";
       newUser.authId = payload.sub;
-
-      if (body.principal) newUser.principal = body.principal;
 
       /**
        *
@@ -302,16 +300,6 @@ export class AuthController {
         refresh_token,
         inviteCode: InvitationService.generate(),
       };
-    }
-
-    if (!user.authId) {
-      user.authId = payload.sub;
-      await user.save();
-    }
-
-    if (body.principal) {
-      user.principal = body.principal;
-      await user.save();
     }
 
     const userData = {

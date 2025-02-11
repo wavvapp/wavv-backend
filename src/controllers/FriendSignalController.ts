@@ -31,7 +31,7 @@ export class FriendSignalController {
   @Get("/")
   async getAllFriendSignals(@CurrentUser() user: AppUser): Promise<any[]> {
     const now = toZonedTime(new Date(), user.timezone);
-    const friendsSignals = await Friendship.find({
+    const friendShips = await Friendship.find({
       relations: ["user", "friendSignal.signal"],
       where: {
         friendSignal: {
@@ -48,16 +48,22 @@ export class FriendSignalController {
     });
 
 
-    const friendSignals = friendsSignals.map( signal => {
-      const friendSignal = signal.friendSignal;
+    const friendSignals = friendShips.map( friendShip => {
+      /**
+       * 
+       * We expect that user should have signal not two, for now
+       * 
+      */
+      const friendSignal = friendShip.friendSignal[0]?.signal;
       const user = {
-        id: signal.user.id,
-        username:  signal.user.username,
-        email: signal.user.email,
-        profilePictureUrl: signal.user.profilePictureUrl,
-        names: signal.user.names
+        id: friendShip.user.id,
+        username:  friendShip.user.username,
+        email: friendShip.user.email,
+        profilePictureUrl: friendShip.user.profilePictureUrl,
+        names: friendShip.user.names,
+        hasNotificationEnabled: friendShip.hasNotificationEnabled,
       }
-      return { ...user, signal: friendSignal[0]?.signal || {} };
+      return { ...user, signal: friendSignal || {} };
     })
      
     return friendSignals;

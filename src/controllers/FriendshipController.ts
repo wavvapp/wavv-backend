@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
 } from "routing-controllers";
+import { BaseEntity } from "typeorm";
 import { UpdateNotificationSettingsDto } from "../dto/friendship/UpdateNotificationSettingsDto";
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
@@ -20,19 +21,27 @@ class CreateFriendshipDto {
 
   @IsBoolean()
   @IsOptional()
-  hasNotificationEnabled?: boolean
+  hasNotificationEnabled?: boolean;
 }
+type GetAllFriendshipsResponse = Omit<User, keyof BaseEntity> & {
+  hasNotificationEnabled: boolean;
+};
 
 @JsonController("/api/friends")
 export class FriendshipController {
   @Get("/")
-  async getAllFriendships(@CurrentUser() user: User): Promise<User[]> {
+  async getAllFriendships(
+    @CurrentUser() user: User
+  ): Promise<GetAllFriendshipsResponse[]> {
     const friendShips = await Friendship.find({
       where: { user: { id: user.id } },
       relations: ["friend"],
     });
 
-    const friends = friendShips.map((friendShip) => friendShip.friend);
+    const friends = friendShips.map((friendShip) => ({
+      ...friendShip.friend,
+      hasNotificationEnabled: friendShip.hasNotificationEnabled,
+    }));
 
     return friends;
   }
@@ -59,8 +68,8 @@ export class FriendshipController {
     myFriendShip.user = user;
     myFriendShip.friend = friend;
     myFriendShip.status = "pending";
-    
-    if(myFriendShip.hasNotificationEnabled){
+
+    if (myFriendShip.hasNotificationEnabled) {
       myFriendShip.hasNotificationEnabled = true;
     }
 
