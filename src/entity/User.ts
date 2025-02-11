@@ -75,6 +75,7 @@ export class User extends BaseEntity {
   @Column({ type: "jsonb", nullable: true })
   preferances: Preferance;
 
+  @Exclude()
   @Column({ nullable: true })
   notificationToken: string;
 
