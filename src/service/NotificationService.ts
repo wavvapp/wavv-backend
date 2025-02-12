@@ -16,28 +16,33 @@ export class NotificationService {
       when: string;
     }
   ) {
-    const messages: ExpoPushMessage[] = [];
-    const currentUserInfo = await User.findOneByOrFail({ id: currentUser.id });
-
-    for await (const friend of friends) {
-      const token = friend?.notificationToken;
-
-      const hasFriendAcceptedNotificationFromMe =
-        await FriendshipService.checkIfFriendAcceptsMyNotification(
-          friend.id,
-          currentUser
-        );
-
-      // if (token && hasFriendAcceptedNotificationFromMe) {
-        messages.push({
-          to: token,
-          sound: "default",
-          title: `See what ${currentUserInfo.username} is up to 💭`,
-          body: `${currentUserInfo.username}, is ${signalData.statusMessage} at ${signalData.when}`,
-        });
-      // }
+    try {
+      
+      const messages: ExpoPushMessage[] = [];
+      const currentUserInfo = await User.findOneByOrFail({ id: currentUser.id });
+  
+      for await (const friend of friends) {
+        const token = friend?.notificationToken;
+  
+        const hasFriendAcceptedNotificationFromMe =
+          await FriendshipService.checkIfFriendAcceptsMyNotification(
+            friend.id,
+            currentUser
+          );
+  
+        if (token) {
+          messages.push({
+            to: token,
+            sound: "default",
+            title: `See what ${currentUserInfo.username} is up to 💭`,
+            body: `${currentUserInfo.username}, is ${signalData.statusMessage} at ${signalData.when}`,
+          });
+        }
+      }
+  
+      this.expo.sendPushNotificationsAsync(messages);
+    } catch (error) {
+      console.log(error)
     }
-
-    this.expo.sendPushNotificationsAsync(messages);
   }
 }
