@@ -69,7 +69,7 @@ export class FriendshipController {
     myFriendShip.friend = friend;
     myFriendShip.status = "pending";
 
-    if (myFriendShip.hasNotificationEnabled) {
+    if (friendshipData.hasNotificationEnabled) {
       myFriendShip.hasNotificationEnabled = true;
     }
 

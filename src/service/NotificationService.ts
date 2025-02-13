@@ -30,7 +30,7 @@ export class NotificationService {
             currentUser
           );
   
-        if (token) {
+        if (token && hasFriendAcceptedNotificationFromMe) {
           messages.push({
             to: token,
             sound: "default",
