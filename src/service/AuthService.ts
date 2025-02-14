@@ -9,7 +9,7 @@ import { InvitationService } from "./InvitationService";
 import PointsServices from "./PointsServices";
 import SignalService from "./SignalService";
 
-type RequestBody = { names: string; email: string; username?: string };
+type RequestBody = { names?: string; email: string; username?: string };
 
 const client = new JwksClient({
   jwksUri: "https://appleid.apple.com/auth/keys",
@@ -58,7 +58,9 @@ class AuthService {
             const newUser = new User();
 
             newUser.email = email;
-            newUser.names = names;
+            if(names){
+              newUser.names = names;
+            }
             newUser.username = username || "";
             newUser.provider = Provider.APPLE;
             newUser.authId = decodeData.sub;

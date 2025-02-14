@@ -122,7 +122,9 @@ export class AuthController {
       if (!payload.email) throw new BadRequestError("Email is required");
 
       newUser.email = payload.email;
-      newUser.names = body.names;
+      if(body.names){
+        newUser.names = body.names;
+      }
       newUser.profilePictureUrl = payload.picture || "";
       newUser.username = body.username || "";
       newUser.provider = "google";
@@ -247,7 +249,9 @@ export class AuthController {
       if (!payload.email) throw new BadRequestError("Email is required");
 
       newUser.email = payload.email;
-      newUser.names = body.names;
+      if(body.names) {
+        newUser.names = body.names;
+      }
       newUser.profilePictureUrl = payload.picture || "";
       newUser.username = body.username || "";
       newUser.provider = "google";

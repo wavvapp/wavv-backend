@@ -114,7 +114,9 @@ export class AuthSigninBody {
   provider?: Provider;
 
   @IsString()
-  names: string;
+  //TODO: This should be required after then next release
+  @IsOptional()
+  names?: string;
 
   @IsEmail()
   @IsOptional()
