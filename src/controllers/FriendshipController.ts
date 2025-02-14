@@ -36,6 +36,9 @@ export class FriendshipController {
     const friendShips = await Friendship.find({
       where: { user: { id: user.id } },
       relations: ["friend"],
+      order: {
+        createdAt: "DESC"
+      }
     });
 
     const friends = friendShips.map((friendShip) => ({
@@ -48,12 +51,12 @@ export class FriendshipController {
 
   @Post("/")
   async createFriendship(
-    @Body() friendshipData: CreateFriendshipDto,
+    @Body() friendshipPayloadData: CreateFriendshipDto,
     @CurrentUser() user: User
   ): Promise<Friendship> {
     const existingFriendship = await Friendship.findOne({
       where: [
-        { user: { id: user.id }, friend: { id: friendshipData.friendId } },
+        { user: { id: user.id }, friend: { id: friendshipPayloadData.friendId } },
       ],
     });
 
@@ -61,7 +64,7 @@ export class FriendshipController {
       throw new HttpError(400, "Friendship already exists");
     }
 
-    const friend = await User.findOneByOrFail({ id: friendshipData.friendId });
+    const friend = await User.findOneByOrFail({ id: friendshipPayloadData.friendId });
 
     // Add new friend in my friendship
     const myFriendShip = new Friendship();
@@ -69,7 +72,7 @@ export class FriendshipController {
     myFriendShip.friend = friend;
     myFriendShip.status = "pending";
 
-    if (friendshipData.hasNotificationEnabled) {
+    if (friendshipPayloadData.hasNotificationEnabled) {
       myFriendShip.hasNotificationEnabled = true;
     }
 
