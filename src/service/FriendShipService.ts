@@ -112,7 +112,7 @@ export class FriendshipService {
   static buildAddFriendNotificationMessage(user: User) {
     return {
       title: NOTIFICATION_TITLE_FOR_NEW_FRIEND,
-      body: `${user.username}, add you.`
+      body: `${user.username}, added you.`
     }
   }
 }
