@@ -4,11 +4,23 @@ import { AppUser } from "../types/Auth";
 import { FriendshipService } from "./FriendShipService";
 import { UserService } from "./UserService";
 
+type BuildNotificationObjParam = {
+  token: string;
+  body: string;
+  title: string;
+};
+
+type SendPushNotificationsToParam = {
+  token: string;
+  body: string;
+  title: string;
+};
+
 export class NotificationService {
-  expo = new Expo();
+  private expo = new Expo();
   userService = new UserService();
 
-  async sendSignalNotificationTo(
+  async sendSignalNotificationToFriends(
     friends: User[],
     currentUser: AppUser,
     signalData: {
@@ -16,33 +28,57 @@ export class NotificationService {
       when: string;
     }
   ) {
-    try {
-      
-      const messages: ExpoPushMessage[] = [];
-      const currentUserInfo = await User.findOneByOrFail({ id: currentUser.id });
-  
-      for await (const friend of friends) {
-        const token = friend?.notificationToken;
-  
-        const hasFriendAcceptedNotificationFromMe =
-          await FriendshipService.checkIfFriendAcceptsMyNotification(
-            friend.id,
-            currentUser
-          );
-  
-        if (token && hasFriendAcceptedNotificationFromMe) {
-          messages.push({
-            to: token,
-            sound: "default",
-            title: currentUserInfo.username,
-            body: `${currentUserInfo.username}, is ${signalData.statusMessage} ${signalData.when.toLowerCase()}`,
-          });
-        }
+    const messages: ExpoPushMessage[] = [];
+    const currentUserInfo = await User.findOneByOrFail({ id: currentUser.id });
+
+    for await (const friend of friends) {
+      const token = friend?.notificationToken;
+
+      const hasFriendAcceptedNotificationFromMe =
+        await FriendshipService.checkIfFriendAcceptsMyNotification(
+          friend.id,
+          currentUser
+        );
+
+      if (token && hasFriendAcceptedNotificationFromMe) {
+        const body = `${currentUserInfo.username}, is ${
+          signalData.statusMessage
+        } ${signalData.when.toLowerCase()}`;
+        const title = currentUserInfo.username;
+
+        messages.push(this.buildNotificationObj({ token, title, body }));
       }
-  
-      this.expo.sendPushNotificationsAsync(messages);
-    } catch (error) {
-      console.log(error)
     }
+
+    this.expo.sendPushNotificationsAsync(messages);
+  }
+
+  async sendPushNotificationsTo({
+    token,
+    body,
+    title,
+  }: SendPushNotificationsToParam) {
+    if (token) {
+      const message = this.buildNotificationObj({
+        title,
+        token,
+        body,
+      });
+
+      await this.expo.sendPushNotificationsAsync([message]);
+    }
+  }
+
+  private buildNotificationObj({
+    token,
+    body,
+    title,
+  }: BuildNotificationObjParam): ExpoPushMessage {
+    return {
+      to: token,
+      sound: "default",
+      body,
+      title,
+    };
   }
 }

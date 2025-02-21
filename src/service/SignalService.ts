@@ -146,7 +146,7 @@ class SignalService {
       await friendSignal.save();
     }
 
-    await this.notificationService.sendSignalNotificationTo(
+    await this.notificationService.sendSignalNotificationToFriends(
       friendsOnSignal,
       user,
       {

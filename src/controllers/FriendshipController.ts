@@ -13,6 +13,7 @@ import { UpdateNotificationSettingsDto } from "../dto/friendship/UpdateNotificat
 import { Friendship } from "../entity/Friendship";
 import { User } from "../entity/User";
 import { FriendshipService } from "../service/FriendShipService";
+import { NotificationService } from "../service/NotificationService";
 import { AppUser } from "../types/Auth";
 
 class CreateFriendshipDto {
@@ -37,8 +38,8 @@ export class FriendshipController {
       where: { user: { id: user.id } },
       relations: ["friend"],
       order: {
-        createdAt: "DESC"
-      }
+        createdAt: "DESC",
+      },
     });
 
     const friends = friendShips.map((friendShip) => ({
@@ -52,11 +53,14 @@ export class FriendshipController {
   @Post("/")
   async createFriendship(
     @Body() friendshipPayloadData: CreateFriendshipDto,
-    @CurrentUser() user: User
+    @CurrentUser() currentUser: AppUser
   ): Promise<Friendship> {
     const existingFriendship = await Friendship.findOne({
       where: [
-        { user: { id: user.id }, friend: { id: friendshipPayloadData.friendId } },
+        {
+          user: { id: currentUser.id },
+          friend: { id: friendshipPayloadData.friendId },
+        },
       ],
     });
 
@@ -64,7 +68,10 @@ export class FriendshipController {
       throw new HttpError(400, "Friendship already exists");
     }
 
-    const friend = await User.findOneByOrFail({ id: friendshipPayloadData.friendId });
+    const friend = await User.findOneByOrFail({
+      id: friendshipPayloadData.friendId,
+    });
+    const user = await User.findOneByOrFail({ id: currentUser.id });
 
     // Add new friend in my friendship
     const myFriendShip = new Friendship();
@@ -81,6 +88,16 @@ export class FriendshipController {
     theirFriendship.user = friend;
     theirFriendship.friend = user;
     theirFriendship.status = "pending";
+
+    
+    const notificationService = new NotificationService();
+    const { body, title } =
+      FriendshipService.buildAddFriendNotificationMessage(user);
+    await notificationService.sendPushNotificationsTo({
+      token: friend.notificationToken,
+      body,
+      title,
+    });
 
     await theirFriendship.save();
     return await myFriendShip.save();

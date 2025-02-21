@@ -5,6 +5,8 @@ import { User } from "../entity/User";
 import { AppUser } from "../types/Auth";
 import SignalService from "./SignalService";
 
+const NOTIFICATION_TITLE_FOR_NEW_FRIEND = "You have a new friend";
+
 class FriendshipOperationsParam {
   @IsUUID("4")
   friendId: string;
@@ -105,5 +107,12 @@ export class FriendshipService {
     });
 
     return friendShip.hasNotificationEnabled;
+  }
+
+  static buildAddFriendNotificationMessage(user: User) {
+    return {
+      title: NOTIFICATION_TITLE_FOR_NEW_FRIEND,
+      body: `${user.username}, add you.`
+    }
   }
 }
