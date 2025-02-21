@@ -74,7 +74,7 @@ export class SignalController {
     await FriendSignal.delete({ signal: { id: signal.id } });
 
     signal.status_message = body.status_message;
-    signal.when = body.when;
+    signal.when = body.when.toLowerCase();
 
     await signal.save();
 

@@ -34,8 +34,8 @@ export class NotificationService {
           messages.push({
             to: token,
             sound: "default",
-            title: `See what ${currentUserInfo.username} is up to 💭`,
-            body: `${currentUserInfo.username}, is ${signalData.statusMessage} at ${signalData.when}`,
+            title: currentUserInfo.username,
+            body: `${currentUserInfo.username}, is ${signalData.statusMessage} ${signalData.when.toLowerCase()}`,
           });
         }
       }

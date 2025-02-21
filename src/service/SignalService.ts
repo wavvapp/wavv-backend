@@ -15,6 +15,8 @@ type AddFriendsToMySignalParams = {
   user: AppUser;
 };
 
+const DEFAULT_STATUS_MESSAGE = "Available";
+
 class SignalService {
   protected pointsService: PointsServices;
   notificationService = new NotificationService();
@@ -74,7 +76,7 @@ class SignalService {
       const newSignal = new Signal();
       newSignal.user = currentUser;
       newSignal.when = "now";
-      newSignal.status_message = "available";
+      newSignal.status_message = DEFAULT_STATUS_MESSAGE;
       await newSignal.save();
 
       return { ...newSignal, friends: [] };
@@ -109,6 +111,7 @@ class SignalService {
         });
 
         mySignal.activatedAt = now;
+        mySignal.status_message = DEFAULT_STATUS_MESSAGE;
       }
 
       mySignal.endsAt = getNext3AM(user.timezone);
