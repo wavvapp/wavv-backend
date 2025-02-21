@@ -1,1 +1,0 @@
-const SIGNAL_CREATION = "";

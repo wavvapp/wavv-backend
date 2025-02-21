@@ -32,45 +32,36 @@ export class AuthController {
     // refresh token logic
     const { refresh_token: token } = body;
 
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-        id: string;
-      };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: string;
+    };
 
-      const user = await User.findOneBy({
-        id: decoded.id,
-      });
+    const user = await User.findOneBy({
+      id: decoded.id,
+    });
 
-      if (!user)
-        throw new BadRequestError(
-          "Invalid or expired token. Please login again"
-        );
+    if (!user)
+      throw new BadRequestError("Invalid or expired token. Please login again");
 
-      const userData = {
-        id: user.id,
-        email: user.email,
-        names: user.names,
-        phoneNumber: user.phoneNumber,
-        emailVerified: user.emailVerified,
-        profilePictureUrl: user.profilePictureUrl,
-      };
+    const userData = {
+      id: user.id,
+      email: user.email,
+      names: user.names,
+      phoneNumber: user.phoneNumber,
+      emailVerified: user.emailVerified,
+      profilePictureUrl: user.profilePictureUrl,
+    };
 
-      // generate access and refresh tokens
-      const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
-        expiresIn: "3d",
-      });
+    // generate access and refresh tokens
+    const access_token = jwt.sign(userData, process.env.JWT_SECRET!, {
+      expiresIn: "3d",
+    });
 
-      const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
-        expiresIn: "7d",
-      });
+    const refresh_token = jwt.sign(userData, process.env.JWT_SECRET!, {
+      expiresIn: "7d",
+    });
 
-      return { ...userData, access_token, refresh_token };
-    } catch (error: any) {
-      if (error)
-        throw new BadRequestError(
-          error["message"] || "Invalid or expired token. Please login again"
-        );
-    }
+    return { ...userData, access_token, refresh_token };
   }
 
   /*
@@ -122,7 +113,7 @@ export class AuthController {
       if (!payload.email) throw new BadRequestError("Email is required");
 
       newUser.email = payload.email;
-      if(body.names){
+      if (body.names) {
         newUser.names = body.names;
       }
       newUser.profilePictureUrl = payload.picture || "";
@@ -249,7 +240,7 @@ export class AuthController {
       if (!payload.email) throw new BadRequestError("Email is required");
 
       newUser.email = payload.email;
-      if(body.names) {
+      if (body.names) {
         newUser.names = body.names;
       }
       newUser.profilePictureUrl = payload.picture || "";
@@ -330,7 +321,12 @@ export class AuthController {
     const pointsService = new PointsServices();
     pointsService.registerUserOnCanister({ sub: payload.sub });
 
-    return { ...userData, access_token, refresh_token, inviteCode: InvitationService.generate() };
+    return {
+      ...userData,
+      access_token,
+      refresh_token,
+      inviteCode: InvitationService.generate(),
+    };
   }
 
   /*

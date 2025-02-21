@@ -6,7 +6,7 @@ import { AppUser } from "../types/Auth";
 @JsonController("/api/invitations")
 export class InvitationController {
   @Get("")
-  async getInvitationCode(@CurrentUser() user: AppUser) {
+  async getInvitationCode(@CurrentUser() _user: AppUser) {
     const invitationCode = InvitationService.generate();
     return {
       invitationCode,

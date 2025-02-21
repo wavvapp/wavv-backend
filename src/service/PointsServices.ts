@@ -24,6 +24,7 @@ class PointsServices {
       const response = await axios.get(`${this.USER_ENDPOINT}/${sub}`);
       return response.data;
     } catch (error) {
+      console.log(error)
       return { id, points: 0 };
     }
   }

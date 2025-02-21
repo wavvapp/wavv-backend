@@ -25,11 +25,23 @@ class CreateFriendSignalDto {
   signalId: string;
 }
 
+type GetAllFriendSignals = {
+  signal: Signal;
+  id: string;
+  username: string;
+  email: string;
+  profilePictureUrl: string;
+  names: string;
+  hasNotificationEnabled: boolean;
+};
+
 @JsonController("/api/friend-signals")
 @Authorized()
 export class FriendSignalController {
   @Get("/")
-  async getAllFriendSignals(@CurrentUser() user: AppUser): Promise<any[]> {
+  async getAllFriendSignals(
+    @CurrentUser() user: AppUser
+  ): Promise<GetAllFriendSignals[]> {
     const now = toZonedTime(new Date(), user.timezone);
     const friendShips = await Friendship.find({
       relations: ["user", "friendSignal.signal"],
@@ -37,35 +49,34 @@ export class FriendSignalController {
         friendSignal: {
           friendship: {
             friend: {
-              id: user.id
-            }
+              id: user.id,
+            },
           },
           signal: {
-            endsAt: MoreThan(now)
-          }
-        }
+            endsAt: MoreThan(now),
+          },
+        },
       },
     });
 
-
-    const friendSignals = friendShips.map( friendShip => {
+    const friendSignals = friendShips.map((friendShip) => {
       /**
-       * 
+       *
        * We expect that user should have signal not two, for now
-       * 
-      */
+       *
+       */
       const friendSignal = friendShip.friendSignal[0]?.signal;
       const user = {
         id: friendShip.user.id,
-        username:  friendShip.user.username,
+        username: friendShip.user.username,
         email: friendShip.user.email,
         profilePictureUrl: friendShip.user.profilePictureUrl,
         names: friendShip.user.names,
         hasNotificationEnabled: friendShip.hasNotificationEnabled,
-      }
+      };
       return { ...user, signal: friendSignal || {} };
-    })
-     
+    });
+
     return friendSignals;
   }
 

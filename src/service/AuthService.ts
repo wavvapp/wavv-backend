@@ -153,9 +153,9 @@ class AuthService {
   }
 
   private async handleGoogleSignin(
-    token: string,
-    bodyPaylod: RequestBody,
-    response: Response
+    _token: string,
+    _bodyPaylod: RequestBody,
+    _response: Response
   ) {}
 
   private getKey(header: JwtHeader, callback: SigningKeyCallback) {

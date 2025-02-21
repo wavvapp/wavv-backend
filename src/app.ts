@@ -20,14 +20,17 @@ import {
   authorizationChecker,
   currentUserChecker,
 } from "./middlewares/authorization";
-import { ErrorHandler } from "./middlewares/errorHandler";
-import EntityNotFoundHandler from "./middlewares/notFoundHandler";
+import CustomErrorHandler from "./middlewares/error-handlers/CustomErrorHandler";
+import TypeOrmErrorHandler from "./middlewares/error-handlers/TypeOrmErrorHandler";
 
 const app = express();
 const options: RoutingControllersOptions = {
   currentUserChecker,
   authorizationChecker,
-  middlewares: [EntityNotFoundHandler, ErrorHandler],
+  middlewares: [
+    TypeOrmErrorHandler,
+    CustomErrorHandler
+  ],
   controllers: [
     HomeController,
     AuthController,
@@ -36,9 +39,10 @@ const options: RoutingControllersOptions = {
     FriendshipController,
     SignalController,
     PointsController,
-    InvitationController
+    InvitationController,
   ],
   cors: true,
+  defaultErrorHandler: false
 };
 
 useExpressServer(app, options);
@@ -51,14 +55,14 @@ const schemas = validationMetadatasToSchemas({
 
 const spec = routingControllersToSpec(storage, options, {
   info: {
-    description: "API Documentation for `SAC`",
+    description: "API Documentation for `Wavv`",
     title: "API Documentation",
     version: "1.0.0",
   },
+  // eslint-disable-next-line
   // @ts-ignore
   components: { schemas },
 });
-
 
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(spec));
 

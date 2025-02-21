@@ -70,7 +70,7 @@ export class User extends BaseEntity {
   provider: string;
 
   @Column({ default: false })
-  profileStatus: Boolean;
+  profileStatus: boolean;
 
   @Column({ type: "jsonb", nullable: true })
   preferances: Preferance;

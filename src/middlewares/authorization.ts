@@ -27,12 +27,12 @@ export const currentUserChecker = async (
     const bearer = token?.split(" ")[1];
 
     if (!bearer) {
-      throw new UnauthorizedError();
+      throw new UnauthorizedError("Unauthorized");
     }
 
     jwt.verify(bearer, process.env.JWT_SECRET!, (err, decoded) => {
       if (err || !isValid(decoded as JwtPayload)) {
-        reject(new UnauthorizedError());
+        reject(new UnauthorizedError("Unauthorized"));
       } else {
         const jwtPayload = decoded as JwtPayload;
         const timezone = headers["x-timezone"] || BERLIN_TIME as string;
@@ -53,7 +53,7 @@ export const currentUserChecker = async (
     });
   });
 
-export const authorizationChecker = async (action: Action, roles: string[]) => {
+export const authorizationChecker = async (action: Action) => {
   const currentUser = await currentUserChecker(action);
   if (!currentUser) {
     return false;
