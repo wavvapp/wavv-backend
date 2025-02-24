@@ -4,6 +4,7 @@ import { AppUser } from "../types/Auth";
 import { FriendshipService } from "./FriendShipService";
 import { UserService } from "./UserService";
 
+
 type BuildNotificationObjParam = {
   token: string;
   body: string;
