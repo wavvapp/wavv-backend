@@ -41,9 +41,7 @@ export class NotificationService {
         );
 
       if (token && hasFriendAcceptedNotificationFromMe) {
-        const body = `${currentUserInfo.username}, is ${
-          signalData.statusMessage
-        } ${signalData.when.toLowerCase()}`;
+        const body = signalData.statusMessage;
         const title = currentUserInfo.username;
 
         messages.push(this.buildNotificationObj({ token, title, body }));
