@@ -1,4 +1,4 @@
-import { differenceInDays } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { SIGNAL_ACTIVATION_POINTS } from "../constants/points";
 import { Friendship } from "../entity/Friendship";
@@ -40,7 +40,8 @@ class SignalService {
             friendId: friendSignal.friendship.friend.id,
             username: friendSignal.friendship.friend.username,
             names: friendSignal.friendship.friend.names,
-            hasNotificationEnabled: friendSignal.friendship.hasNotificationEnabled,
+            hasNotificationEnabled:
+              friendSignal.friendship.hasNotificationEnabled,
             profilePictureUrl:
               friendSignal.friendship.friend?.profilePictureUrl,
           };
@@ -96,7 +97,11 @@ class SignalService {
 
     if (hasEnded) {
       const now = toZonedTime(new Date(), user.timezone);
-      const isNextDay = differenceInDays(mySignal.activatedAt, now);
+      const daysInDiff = differenceInDays(
+        format(now, "YYYY-MM-DD"),
+        format(mySignal.activatedAt, "YYYY-MM-DD")
+      );
+      const isNextDay = daysInDiff > 0;
 
       /**
        *
