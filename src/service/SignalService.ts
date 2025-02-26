@@ -1,4 +1,4 @@
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays, startOfDay } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { SIGNAL_ACTIVATION_POINTS } from "../constants/points";
 import { Friendship } from "../entity/Friendship";
@@ -96,10 +96,12 @@ class SignalService {
     const hasEnded = mySignal.hasEnded(user.timezone);
 
     if (hasEnded) {
-      const now = toZonedTime(new Date(), user.timezone);
+      const now = startOfDay(toZonedTime(new Date(), user.timezone));
+      const activatedAt = startOfDay(mySignal.activatedAt);
+
       const daysInDiff = differenceInDays(
-        format(now, "YYYY-MM-DD"),
-        format(mySignal.activatedAt, "YYYY-MM-DD")
+        now,
+        activatedAt
       );
       const isNextDay = daysInDiff > 0;
 
