@@ -4,38 +4,41 @@ on:
   push:
     branches:
       - main
+
 env:
   GHCR_REGISTRY: ghcr.io
-  GHCR_IMAGE_NAME: ${{ github.repository }}
+  GHCR_IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/my-image  # Define your image properly
+
+permissions:
+  contents: read
+  packages: write  # Required to push images to GHCR
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      packages: write
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4  # Updated version
 
-      - name: Use Node 20
-        uses: actions/setup-node@v1
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4  # Updated version
         with:
-          node-version: 20.X
-      - name: Login into GitHub Container regestry
-        uses: docker/login-action@v1
+          node-version: 20
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3  # Updated version
         with:
           registry: ${{ env.GHCR_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build the Docker image
-        uses: docker/build-push-action@v4
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5  # Updated version
         with:
-            context: .
-            push: true
-            platforms: linux/amd64
-            tags: ${{ github.sha }}
-            file: Dockerfile
-            
+          context: .
+          push: true
+          platforms: linux/amd64
+          file: Dockerfile
+          tags: |
+            ${{ env.GHCR_IMAGE_NAME }}:latest
+            ${{ env.GHCR_IMAGE_NAME }}:${{ github.sha }}
