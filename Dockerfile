@@ -15,15 +15,17 @@ RUN pnpm install
 COPY . .
 
 # app env variables
+ARG NODE_ENV
 ARG DATABASE_URL
 
 ENV DATABASE_URL=$DATABASE_URL
+ENV NODE_ENV=production
 
 # Build the TypeScript code
 RUN pnpm run build
 
 # Build the TypeScript code
-RUN pnpm run migration:run
+# RUN pnpm run migration:run
 
 # Expose the port the app runs on
 EXPOSE 8000
