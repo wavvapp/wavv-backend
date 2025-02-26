@@ -20,6 +20,7 @@ export const dataSourceOptions: DataSourceOptions = {
   entities: [User, Friendship, Signal, FriendSignal, Notification],
   migrationsRun: false,
   migrations: MIGRATION_FILES,
+  ssl: false,
   synchronize: false,
   poolSize: 10,
 };
