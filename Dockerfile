@@ -12,12 +12,13 @@ COPY . .
 ARG NODE_ENV
 ARG DATABASE_URL
 
-RUN pnpm run migration:run
 
 ENV DATABASE_URL=$DATABASE_URL
 ENV NODE_ENV=production
 
 RUN pnpm run build
+
+RUN pnpm run migration:run
 
 EXPOSE 8000
 CMD ["node", "dist/index.js"]
