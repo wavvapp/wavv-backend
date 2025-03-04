@@ -15,7 +15,7 @@ type AddFriendsToMySignalParams = {
   user: AppUser;
 };
 
-const DEFAULT_STATUS_MESSAGE = "Available";
+const DEFAULT_STATUS_MESSAGE = "Let's hang";
 
 class SignalService {
   protected pointsService: PointsServices;

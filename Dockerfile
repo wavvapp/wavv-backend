@@ -12,6 +12,8 @@ COPY . .
 ARG NODE_ENV
 ARG DATABASE_URL
 
+RUN pnpm run migration:run
+
 ENV DATABASE_URL=$DATABASE_URL
 ENV NODE_ENV=production
 

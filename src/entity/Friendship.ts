@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import {
   BaseEntity,
   Column,
@@ -6,12 +7,14 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn
 } from "typeorm";
 import { FriendSignal } from "./FriendSignal";
 import { User } from "./User";
 
 @Entity()
+@Unique(["userId", "friendId"])
 export class Friendship extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
@@ -36,4 +39,21 @@ export class Friendship extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Exclude()
+  @Column({
+    generatedType: "VIRTUAL",
+    type: "number",
+    nullable: true,
+  })
+  private userId: string;
+
+
+  @Exclude()
+  @Column({
+    generatedType: "VIRTUAL",
+    type: "number",
+    nullable: true,
+  })
+  private friendId: string;
 }

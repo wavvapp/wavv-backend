@@ -66,19 +66,22 @@ export class SignalController {
     @CurrentUser() user: AppUser,
     @Body() body: UpdateSignalBody
   ) {
-    const { friends } = body;
-    const signal = await Signal.findOneByOrFail({ user: { id: user.id } });
+    const { friends, status_message, when } = body;
     const signalService = new SignalService();
+    const signal = await signalService.initiateSignalIfNotExist(user)
 
+    
     // Reset friends assigned on my signal
     await FriendSignal.delete({ signal: { id: signal.id } });
 
-    signal.status_message = body.status_message;
-    signal.when = body.when.toLowerCase();
-
-    await signal.save();
+    await Signal.update(signal.id, {
+      status_message: status_message,
+      when: when.toLowerCase()
+    });
 
     await signalService.addFriendsToMySignal({ friendIds: friends, user });
+
+    await signalService.activateMySignal(user)
 
     // fetch friend signals
     return await signalService.getMySignalWithAssignedFriend(user);

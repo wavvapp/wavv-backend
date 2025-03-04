@@ -35,6 +35,12 @@ export class FriendshipController {
     @CurrentUser() user: User
   ): Promise<GetAllFriendshipsResponse[]> {
     const friendShips = await Friendship.find({
+      select: {
+        friend: {
+          id: true,
+          names: true,
+        }
+      },
       where: { user: { id: user.id } },
       relations: ["friend"],
       order: {
