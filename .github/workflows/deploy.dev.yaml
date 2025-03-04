@@ -14,7 +14,7 @@ permissions:
   packages: write
 
 jobs:
-  deploy:
+  dev-deployment:
     runs-on: ubuntu-latest
 
     steps:
@@ -70,11 +70,8 @@ jobs:
 
       - name: Download app.dev.yaml configuration
         run: |
-          gh api repos/${{ github.repository_owner }}/wavv-infrastructure/contents/.do/app.dev.yaml \
+          GITHUB_TOKEN=${{ secrets.WAVV_REPO_PERSONAL_ACCESS_TOKEN }} gh api repos/${{ github.repository_owner }}/wavv-infrastructure/contents/.do/app.dev.yaml \
             --header "Accept: application/vnd.github.v3.raw" > .do/app.dev.yaml
-
-      - name: Verify the file
-        run: cat .do/app.dev.yaml
 
 
       - name: Deploy the app
