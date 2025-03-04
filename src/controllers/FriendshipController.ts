@@ -103,8 +103,8 @@ export class FriendshipController {
     });
 
     const inverseExistingFriendshipCount = await Friendship.countBy({
-      user: { id: currentUser.id },
-      friend: { id: friendshipRequest.friendId },
+      friend: { id: currentUser.id },
+      user: { id: friendshipRequest.friendId },
     });
 
     if (inverseExistingFriendshipCount === 0) {
