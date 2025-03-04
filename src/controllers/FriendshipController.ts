@@ -39,7 +39,7 @@ export class FriendshipController {
         friend: {
           id: true,
           names: true,
-        }
+        },
       },
       where: { user: { id: user.id } },
       relations: ["friend"],
@@ -58,55 +58,60 @@ export class FriendshipController {
 
   @Post("/")
   async createFriendship(
-    @Body() friendshipPayloadData: CreateFriendshipDto,
+    @Body() friendshipRequest: CreateFriendshipDto,
     @CurrentUser() currentUser: AppUser
   ): Promise<Friendship> {
-    const existingFriendship = await Friendship.findOne({
-      where: [
-        {
-          user: { id: currentUser.id },
-          friend: { id: friendshipPayloadData.friendId },
-        },
-      ],
+    const existingFriendshipCount = await Friendship.countBy({
+      user: { id: currentUser.id },
+      friend: { id: friendshipRequest.friendId },
     });
 
-    if (existingFriendship) {
+    if (existingFriendshipCount > 0) {
       throw new HttpError(400, "Friendship already exists");
     }
 
-    const friend = await User.findOneByOrFail({
-      id: friendshipPayloadData.friendId,
+    const friendToAdd = await User.findOneByOrFail({
+      id: friendshipRequest.friendId,
     });
-    const user = await User.findOneByOrFail({ id: currentUser.id });
+    const currentUserEntity = await User.findOneByOrFail({
+      id: currentUser.id,
+    });
 
-    // Add new friend in my friendship
-    const myFriendShip = new Friendship();
-    myFriendShip.user = user;
-    myFriendShip.friend = friend;
-    myFriendShip.status = "pending";
+    // Create friendship from current user to friend
+    const currentUserFriendship = new Friendship();
+    currentUserFriendship.user = currentUserEntity;
+    currentUserFriendship.friend = friendToAdd;
+    currentUserFriendship.status = "approved";
 
-    if (friendshipPayloadData.hasNotificationEnabled) {
-      myFriendShip.hasNotificationEnabled = true;
+    if (friendshipRequest.hasNotificationEnabled) {
+      currentUserFriendship.hasNotificationEnabled = true;
     }
 
-    // Add my current profile in their friendship
-    const theirFriendship = new Friendship();
-    theirFriendship.user = friend;
-    theirFriendship.friend = user;
-    theirFriendship.status = "pending";
+    // Create friendship from friend to current user
+    const friendFriendship = new Friendship();
+    friendFriendship.user = friendToAdd;
+    friendFriendship.friend = currentUserEntity;
+    friendFriendship.status = "pending";
 
-    
     const notificationService = new NotificationService();
     const { body, title } =
-      FriendshipService.buildAddFriendNotificationMessage(user);
+      FriendshipService.buildAddFriendNotificationMessage(currentUserEntity);
     await notificationService.sendPushNotificationsTo({
-      token: friend.notificationToken,
+      token: friendToAdd.notificationToken,
       body,
       title,
     });
 
-    await theirFriendship.save();
-    return await myFriendShip.save();
+    const inverseExistingFriendshipCount = await Friendship.countBy({
+      user: { id: currentUser.id },
+      friend: { id: friendshipRequest.friendId },
+    });
+
+    if (inverseExistingFriendshipCount === 0) {
+      await friendFriendship.save();
+    }
+
+    return await currentUserFriendship.save();
   }
 
   @Post("/unfriend")
