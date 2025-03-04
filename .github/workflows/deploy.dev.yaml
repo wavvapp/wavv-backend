@@ -21,34 +21,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Use Node 20
+      - name: Use Node 21
         uses: actions/setup-node@v1
         with:
-          node-version: 20.X
-
-      - name: Install Railway
-        run: npm i -g pnpm
-
-      - name: Install packages
-        run: pnpm install
-
-      - name: Install Railway
-        run: npm i -g @railway/cli
-
-        
-      - name: Dev deployment
-        run: railway up --service f7e4ff90-58c0-42c2-8c3d-d3e6bc7a4b3b
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEVELOPMENT_TOKEN }}
-
-
+          node-version: 21.X
+  
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.GHCR_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
 
       - name: Build and Push Docker Image
         id: push
@@ -68,13 +51,13 @@ jobs:
       - name: Ensure .do directory exists
         run: mkdir -p .do
 
-      - name: Download app.dev.yaml configuration
+      - name: Set up the app dev specs
         run: |
           GITHUB_TOKEN=${{ secrets.WAVV_REPO_PERSONAL_ACCESS_TOKEN }} gh api repos/${{ github.repository_owner }}/wavv-infrastructure/contents/.do/app.dev.yaml \
             --header "Accept: application/vnd.github.v3.raw" > .do/app.dev.yaml
 
 
-      - name: Deploy the app
+      - name: Deploy the wavv-dev-backend app
         uses: digitalocean/app_action/deploy@v2
         env:
           SAMPLE_DIGEST: ${{ steps.push.outputs.digest }}

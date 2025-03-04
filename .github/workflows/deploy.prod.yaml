@@ -1,4 +1,4 @@
-name: Production release
+name: Prod release
 
 on:
   workflow_dispatch:
@@ -11,10 +11,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Use Node 20
+      - name: Use Node 21
         uses: actions/setup-node@v1
         with:
-          node-version: 20.X
+          node-version: 21.X
 
       - name: Install Railway
         run: npm i -g pnpm
