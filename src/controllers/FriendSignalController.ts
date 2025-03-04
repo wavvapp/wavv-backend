@@ -62,10 +62,10 @@ export class FriendSignalController {
     const friendSignals = friendShips.map((friendShip) => {
       /**
        *
-       * We expect that user should have signal not two, for now
+       * We expect that user should have one signal not two, for now
        *
        */
-      const friendSignal = friendShip.friendSignal[0]?.signal;
+      const friendSignal = friendShip.friendSignal[0]?.signal ?? {};
       const user = {
         id: friendShip.user.id,
         username: friendShip.user.username,
@@ -74,7 +74,7 @@ export class FriendSignalController {
         names: friendShip.user.names,
         hasNotificationEnabled: friendShip.hasNotificationEnabled,
       };
-      return { ...user, signal: friendSignal || {} };
+      return { ...user, signal: friendSignal };
     });
 
     return friendSignals;
@@ -128,7 +128,7 @@ export class FriendSignalController {
     return friendSignal;
   }
 
-  @Post()
+  @Post("/")
   async createFriendSignal(
     @Body() friendSignalData: CreateFriendSignalDto,
     @CurrentUser() user: User

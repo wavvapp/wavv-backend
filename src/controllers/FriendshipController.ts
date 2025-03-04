@@ -39,6 +39,7 @@ export class FriendshipController {
         friend: {
           id: true,
           names: true,
+          username: true
         },
       },
       where: { user: { id: user.id } },
