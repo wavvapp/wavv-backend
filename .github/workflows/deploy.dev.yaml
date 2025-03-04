@@ -1,10 +1,9 @@
 name: Dev release
 
 on:
-  workflow_run:
-    workflows: [Publish image]
-    types:
-      - completed
+  push:
+    branches: 
+      - main
 
 env:
   GHCR_REGISTRY: ghcr.io
