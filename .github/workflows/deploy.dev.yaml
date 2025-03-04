@@ -5,9 +5,9 @@ on:
     branches: 
       - main
 
-# env:
-#   GHCR_REGISTRY: ghcr.io
-#   GHCR_IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/wavv-backend
+env:
+  GHCR_REGISTRY: ghcr.io
+  GHCR_IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/wavv-backend
 
 permissions:
   contents: read
@@ -36,7 +36,7 @@ jobs:
         run: npm i -g @railway/cli
 
       - name: Deploy to Development
-        run: railway up --service a878b9d9-e826-4089-a688-577441eb2f2c
+        run: railway up --service f7e4ff90-58c0-42c2-8c3d-d3e6bc7a4b3b
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEVELOPMENT_TOKEN }}
     
