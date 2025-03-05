@@ -2,26 +2,26 @@ import { Response } from "express";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import {
-  BadRequestError,
-  Body,
-  CurrentUser,
-  Get,
-  JsonController,
-  Patch,
-  Post,
-  Res,
+    BadRequestError,
+    Body,
+    CurrentUser,
+    Get,
+    JsonController,
+    Patch,
+    Post,
+    Res,
 } from "routing-controllers";
 import {
-  AuthSigninBody,
-  RefreshTokenBody,
-  UpdateProfileBody,
-} from "../dto/auth/login";
-import { User } from "../entity/User";
-import AuthService from "../service/AuthService";
-import { InvitationService } from "../service/InvitationService";
-import PointsServices from "../service/PointsServices";
-import SignalService from "../service/SignalService";
-import { AppUser, Provider } from "../types/Auth";
+    AuthSigninBody,
+    RefreshTokenBody,
+    UpdateProfileBody,
+} from "../dto/auth/login.dto";
+import { User } from "../entity/user.entity";
+import AuthService from "../service/auth.service";
+import { InvitationService } from "../service/invitation.service";
+import PointsServices from "../service/points.service";
+import SignalService from "../service/signal.service";
+import { AppUser, Provider } from "../types/auth";
 
 @JsonController("/api/auth")
 export class AuthController {

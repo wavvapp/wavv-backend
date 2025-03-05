@@ -10,8 +10,8 @@ import {
   Unique,
   UpdateDateColumn
 } from "typeorm";
-import { FriendSignal } from "./FriendSignal";
-import { User } from "./User";
+import { FriendSignal } from "./friend.signal.entity";
+import { User } from "./user.entity";
 
 @Entity()
 @Unique(["userId", "friendId"])

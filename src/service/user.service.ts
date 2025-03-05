@@ -1,8 +1,8 @@
 import dataSource from "../data-source";
-import { Friendship } from "../entity/Friendship";
-import { Signal } from "../entity/Signal";
-import { User } from "../entity/User";
-import { AppUser } from "../types/Auth";
+import { Friendship } from "../entity/friendship.entity";
+import { Signal } from "../entity/signal.entity";
+import { User } from "../entity/user.entity";
+import { AppUser } from "../types/auth";
 
 export class UserService {
   static async deleteMyAccount(user: AppUser) {

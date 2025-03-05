@@ -8,20 +8,21 @@ import {
 } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import swaggerUi from "swagger-ui-express";
-import { AuthController } from "./controllers/AuthController";
-import { FriendshipController } from "./controllers/FriendshipController";
-import { FriendSignalController } from "./controllers/FriendSignalController";
-import { HomeController } from "./controllers/HomeController";
-import { InvitationController } from "./controllers/InvitationController";
-import { PointsController } from "./controllers/PointsController";
-import { SignalController } from "./controllers/SignalsController";
-import { UsersController } from "./controllers/UsersController";
+import { AuthController } from "./controllers/auth.controller";
+import { FriendSignalController } from "./controllers/friends.signal.controller";
+import { FriendshipController } from "./controllers/friendships.controller";
+import { GroupController } from "./controllers/groups.controller";
+import { InvitationController } from "./controllers/invitations.controller";
+import { LivesController } from "./controllers/livez.controller";
+import { PointsController } from "./controllers/points.controller";
+import { SignalController } from "./controllers/signals.controller";
+import { UsersController } from "./controllers/users.controller";
 import {
   authorizationChecker,
   currentUserChecker,
-} from "./middlewares/authorization";
-import CustomErrorHandler from "./middlewares/error-handlers/CustomErrorHandler";
-import TypeOrmErrorHandler from "./middlewares/error-handlers/TypeOrmErrorHandler";
+} from "./middlewares/authorization.middleware";
+import CustomErrorHandler from "./middlewares/error-handlers/custom.error.handler.middleware";
+import TypeOrmErrorHandler from "./middlewares/error-handlers/typeorm.error.handler.middleware";
 
 const app = express();
 const options: RoutingControllersOptions = {
@@ -32,7 +33,7 @@ const options: RoutingControllersOptions = {
     CustomErrorHandler
   ],
   controllers: [
-    HomeController,
+    LivesController,
     AuthController,
     UsersController,
     FriendSignalController,
@@ -40,6 +41,7 @@ const options: RoutingControllersOptions = {
     SignalController,
     PointsController,
     InvitationController,
+    GroupController
   ],
   cors: true,
   defaultErrorHandler: false

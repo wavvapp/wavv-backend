@@ -1,9 +1,9 @@
 import { IsUUID } from "class-validator";
 import { HttpError } from "routing-controllers";
-import { Friendship } from "../entity/Friendship";
-import { User } from "../entity/User";
-import { AppUser } from "../types/Auth";
-import SignalService from "./SignalService";
+import { Friendship } from "../entity/friendship.entity";
+import { User } from "../entity/user.entity";
+import { AppUser } from "../types/auth";
+import SignalService from "./signal.service";
 
 const NOTIFICATION_TITLE_FOR_NEW_FRIEND = "🎉 You have a new friend!";
 

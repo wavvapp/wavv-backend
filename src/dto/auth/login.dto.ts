@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { Provider } from "../../types/Auth";
-import { Preferance } from "../../types/User";
+import { Provider } from "../../types/auth";
+import { Preferance } from "../../types/user";
 
 export class LoginBody {
   @IsNotEmpty()

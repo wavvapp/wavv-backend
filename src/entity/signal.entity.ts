@@ -9,8 +9,8 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { isDateExpired } from "../utils/isDateExpired";
-import { FriendSignal } from "./FriendSignal";
-import { User } from "./User";
+import { FriendSignal } from "./friend.signal.entity";
+import { User } from "./user.entity";
 
 @Entity()
 export class Signal extends BaseEntity {

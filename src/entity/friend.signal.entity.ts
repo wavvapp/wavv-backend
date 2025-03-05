@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Friendship } from "./Friendship";
-import { Signal } from "./Signal";
+import { Friendship } from "./friendship.entity";
+import { Signal } from "./signal.entity";
 
 @Entity()
 export class FriendSignal extends BaseEntity {

@@ -3,11 +3,11 @@ import { Response } from "express";
 import jwt, { JwtHeader, SigningKeyCallback } from "jsonwebtoken";
 import { CertSigningKey, JwksClient, RsaSigningKey } from "jwks-rsa";
 import { BadRequestError } from "routing-controllers";
-import { User } from "../entity/User";
-import { Provider } from "../types/Auth";
-import { InvitationService } from "./InvitationService";
-import PointsServices from "./PointsServices";
-import SignalService from "./SignalService";
+import { User } from "../entity/user.entity";
+import { Provider } from "../types/auth";
+import { InvitationService } from "./invitation.service";
+import PointsServices from "./points.service";
+import SignalService from "./signal.service";
 
 type RequestBody = { names?: string; email: string; username?: string };
 

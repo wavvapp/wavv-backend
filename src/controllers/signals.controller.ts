@@ -1,16 +1,16 @@
 import { IsNotEmpty, IsString, MaxLength } from "class-validator";
 import {
-  Body,
-  CurrentUser,
-  Get,
-  JsonController,
-  Post,
-  Put,
+    Body,
+    CurrentUser,
+    Get,
+    JsonController,
+    Post,
+    Put,
 } from "routing-controllers";
-import { FriendSignal } from "../entity/FriendSignal";
-import { Signal } from "../entity/Signal";
-import SignalService from "../service/SignalService";
-import { AppUser } from "../types/Auth";
+import { FriendSignal } from "../entity/friend.signal.entity";
+import { Signal } from "../entity/signal.entity";
+import SignalService from "../service/signal.service";
+import { AppUser } from "../types/auth";
 
 class UpdateSignalBody {
   @MaxLength(100, {

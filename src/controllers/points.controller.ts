@@ -1,7 +1,7 @@
 import { CurrentUser, Get, JsonController } from "routing-controllers";
-import { User } from "../entity/User";
-import PointsServices from "../service/PointsServices";
-import { AppUser } from "../types/Auth";
+import { User } from "../entity/user.entity";
+import PointsServices from "../service/points.service";
+import { AppUser } from "../types/auth";
 
 @JsonController("/api/points")
 export class PointsController {

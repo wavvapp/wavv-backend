@@ -1,8 +1,8 @@
 import Expo, { ExpoPushMessage } from "expo-server-sdk";
-import { User } from "../entity/User";
-import { AppUser } from "../types/Auth";
-import { FriendshipService } from "./FriendShipService";
-import { UserService } from "./UserService";
+import { User } from "../entity/user.entity";
+import { AppUser } from "../types/auth";
+import { FriendshipService } from "./friendship.service";
+import { UserService } from "./user.service";
 
 
 type BuildNotificationObjParam = {

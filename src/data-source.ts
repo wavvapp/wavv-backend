@@ -1,11 +1,11 @@
 import "dotenv/config";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { Friendship } from "./entity/Friendship";
-import { FriendSignal } from "./entity/FriendSignal";
-import { Notification } from "./entity/Notification";
-import { Signal } from "./entity/Signal";
-import { User } from "./entity/User";
+import { FriendSignal } from "./entity/friend.signal.entity";
+import { Friendship } from "./entity/friendship.entity";
+import { Notification } from "./entity/notification.entity";
+import { Signal } from "./entity/signal.entity";
+import { User } from "./entity/user.entity";
 
 export const MIGRATION_FILES =
   process.env.NODE_ENV === "development"

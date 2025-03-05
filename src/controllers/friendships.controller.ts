@@ -1,20 +1,20 @@
 import { IsBoolean, IsNotEmpty, IsOptional } from "class-validator";
 import {
-  Body,
-  CurrentUser,
-  Get,
-  HttpError,
-  JsonController,
-  Patch,
-  Post,
+    Body,
+    CurrentUser,
+    Get,
+    HttpError,
+    JsonController,
+    Patch,
+    Post,
 } from "routing-controllers";
 import { BaseEntity } from "typeorm";
-import { UpdateNotificationSettingsDto } from "../dto/friendship/UpdateNotificationSettingsDto";
-import { Friendship } from "../entity/Friendship";
-import { User } from "../entity/User";
-import { FriendshipService } from "../service/FriendShipService";
-import { NotificationService } from "../service/NotificationService";
-import { AppUser } from "../types/Auth";
+import { UpdateNotificationSettingsDto } from "../dto/friendship/update.notification.settings.dto";
+import { Friendship } from "../entity/friendship.entity";
+import { User } from "../entity/user.entity";
+import { FriendshipService } from "../service/friendship.service";
+import { NotificationService } from "../service/notification.service";
+import { AppUser } from "../types/auth";
 
 class CreateFriendshipDto {
   @IsNotEmpty()

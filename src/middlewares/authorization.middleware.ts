@@ -1,8 +1,8 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Action, UnauthorizedError } from "routing-controllers";
 import { BERLIN_TIME } from "../constants/timezone";
-import { User } from "../entity/User";
-import { AppUser } from "../types/Auth";
+import { User } from "../entity/user.entity";
+import { AppUser } from "../types/auth";
 
 const isValid = (payload: JwtPayload) => {
   const expiresAt = payload.exp || 0;

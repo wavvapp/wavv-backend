@@ -1,14 +1,14 @@
 import { differenceInDays, startOfDay } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { SIGNAL_ACTIVATION_POINTS } from "../constants/points";
-import { Friendship } from "../entity/Friendship";
-import { FriendSignal } from "../entity/FriendSignal";
-import { Signal } from "../entity/Signal";
-import { User } from "../entity/User";
-import type { AppUser } from "../types/Auth";
+import { FriendSignal } from "../entity/friend.signal.entity";
+import { Friendship } from "../entity/friendship.entity";
+import { Signal } from "../entity/signal.entity";
+import { User } from "../entity/user.entity";
+import type { AppUser } from "../types/auth";
 import { getNext3AM } from "../utils/getNext3AM";
-import { NotificationService } from "./NotificationService";
-import PointsServices from "./PointsServices";
+import { NotificationService } from "./notification.service";
+import PointsServices from "./points.service";
 
 type AddFriendsToMySignalParams = {
   friendIds: string[];

@@ -1,22 +1,22 @@
 import { IsNotEmpty } from "class-validator";
 import { toZonedTime } from "date-fns-tz";
 import {
-  Authorized,
-  Body,
-  CurrentUser,
-  Delete,
-  Get,
-  HttpError,
-  JsonController,
-  Param,
-  Post,
+    Authorized,
+    Body,
+    CurrentUser,
+    Delete,
+    Get,
+    HttpError,
+    JsonController,
+    Param,
+    Post,
 } from "routing-controllers";
 import { MoreThan } from "typeorm";
-import { FriendSignal } from "../entity/FriendSignal";
-import { Friendship } from "../entity/Friendship";
-import { Signal } from "../entity/Signal";
-import { User } from "../entity/User";
-import { AppUser } from "../types/Auth";
+import { FriendSignal } from "../entity/friend.signal.entity";
+import { Friendship } from "../entity/friendship.entity";
+import { Signal } from "../entity/signal.entity";
+import { User } from "../entity/user.entity";
+import { AppUser } from "../types/auth";
 
 class CreateFriendSignalDto {
   @IsNotEmpty()

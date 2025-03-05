@@ -1,7 +1,7 @@
 import { Body, CurrentUser, Get, JsonController, Post } from "routing-controllers";
-import { VerifyInvitationCode } from "../dto/invitation";
-import { InvitationService } from "../service/InvitationService";
-import { AppUser } from "../types/Auth";
+import { VerifyInvitationCode } from "../dto/invitation/invite.code.dto";
+import { InvitationService } from "../service/invitation.service";
+import { AppUser } from "../types/auth";
 
 @JsonController("/api/invitations")
 export class InvitationController {
