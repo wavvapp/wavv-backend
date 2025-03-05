@@ -25,7 +25,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 21.X
-    
   
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -49,10 +48,11 @@ jobs:
       - name: Authenticate GitHub CLI
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
+      - name: Ensure .do directory exists
+        run: mkdir -p .do
 
       - name: Set up the app dev specs
         run: |
-          mkdir -p .do
           GITHUB_TOKEN=${{ secrets.WAVV_REPO_PERSONAL_ACCESS_TOKEN }} gh api repos/${{ github.repository_owner }}/wavv-infrastructure/contents/.do/app.dev.yaml \
             --header "Accept: application/vnd.github.v3.raw" > .do/app.dev.yaml
 
