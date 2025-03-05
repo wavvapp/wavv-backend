@@ -23,18 +23,18 @@ jobs:
         with:
           node-version: 21.X
 
+      - name: Set current release version
+        id: get-version
+        run: |
+          VERSION=$(GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} gh release view --json tagName --jq .tagName)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.GHCR_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set current release version
-        id: get-version
-        run: |
-          VERSION=$(GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} gh release view --json tagName --jq .tagName)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Build and Push Docker Image
         id: push
