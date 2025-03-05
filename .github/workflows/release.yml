@@ -36,7 +36,7 @@ jobs:
 
       - name: Set current release version
         run: | 
-              VERSION={{ gh release view --json tagName --jq }}
+              VERSION=(gh release view --json tagName --jq)
               echo "LATEST_RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Set current release version
