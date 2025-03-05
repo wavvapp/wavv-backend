@@ -18,7 +18,7 @@ ENV NODE_ENV=production
 
 RUN pnpm run build
 
-RUN pnpm run migration:run
+# RUN pnpm run migration:run
 
 EXPOSE 8000
 CMD ["node", "dist/index.js"]
