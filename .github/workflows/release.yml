@@ -1,10 +1,11 @@
-name: Generating release
+name: Release new version
 
 on:
-  workflow_run:
-    workflows: [Production release]
-    types:
-      - completed
+  workflow_dispatch:
+
+env:
+  GHCR_REGISTRY: ghcr.io
+  GHCR_IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/wavv-backend
 
 jobs:
   release:
@@ -32,3 +33,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+
+      - name: Set current release version
+        run: | 
+              VERSION={{ gh release view --json tagName --jq }}
+              echo "LATEST_RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Set current release version
+        id: get-version
+        run: |
+          VERSION=$(gh release view --json tagName --jq .tagName)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          file: Dockerfile
+          tags: |
+            ${{ env.GHCR_IMAGE_NAME }}:${{ steps.get-version.outputs.version }}
+            ${{ env.GHCR_IMAGE_NAME }}:${{ github.sha }}
