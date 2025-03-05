@@ -33,7 +33,7 @@ jobs:
       - name: Set current release version
         id: get-version
         run: |
-          VERSION=$(gh release view --json tagName --jq .tagName)
+          VERSION=$(GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}gh release view --json tagName --jq .tagName)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Build and Push Docker Image
