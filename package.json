@@ -4,7 +4,7 @@
   "description": "SAC Backend",
   "main": "dist/index.ts",
   "engines": {
-    "node": ">=20.17.0"
+    "node": ">=21.0.0"
   },
   "scripts": {
     "start": "NODE_ENV=production node dist/index.js",
