@@ -1,18 +1,20 @@
 import { Exclude } from "class-transformer";
 import {
-    BaseEntity,
-    Column,
-    CreateDateColumn,
-    Entity,
-    Index,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from "typeorm";
 import { Preferance } from "../types/user";
 import { Friendship } from "./friendship.entity";
+import { Group } from "./group.entity";
 import { Notification } from "./notification.entity";
 import { Signal } from "./signal.entity";
+
 
 @Entity()
 export class User extends BaseEntity {
@@ -96,4 +98,7 @@ export class User extends BaseEntity {
     onDelete: "CASCADE"
   })
   notifications?: Notification[];
+
+  @OneToMany(() => Group , (group) => group.owner)
+  groups: Group[]
 }

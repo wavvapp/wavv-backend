@@ -11,7 +11,9 @@ import {
   UpdateDateColumn
 } from "typeorm";
 import { FriendSignal } from "./friend.signal.entity";
+import { Group } from "./group.entity";
 import { User } from "./user.entity";
+
 
 @Entity()
 @Unique(["userId", "friendId"])
@@ -39,6 +41,9 @@ export class Friendship extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => Group, (groups) => groups.membership)
+  groups: Group[]
 
   @Exclude()
   @Column({

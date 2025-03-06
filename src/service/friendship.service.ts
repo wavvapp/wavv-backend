@@ -115,4 +115,8 @@ export class FriendshipService {
       body: `${user.username}, just added you!`
     }
   }
+
+  static async getById(id: string) {
+    return await Friendship.findOneBy({  id })
+  }
 }

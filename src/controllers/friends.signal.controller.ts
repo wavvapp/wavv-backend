@@ -1,15 +1,15 @@
 import { IsNotEmpty } from "class-validator";
 import { toZonedTime } from "date-fns-tz";
 import {
-    Authorized,
-    Body,
-    CurrentUser,
-    Delete,
-    Get,
-    HttpError,
-    JsonController,
-    Param,
-    Post,
+  Authorized,
+  Body,
+  CurrentUser,
+  Delete,
+  Get,
+  HttpError,
+  JsonController,
+  Param,
+  Post,
 } from "routing-controllers";
 import { MoreThan } from "typeorm";
 import { FriendSignal } from "../entity/friend.signal.entity";
@@ -35,8 +35,8 @@ type GetAllFriendSignals = {
   hasNotificationEnabled: boolean;
 };
 
-@JsonController("/api/friend-signals")
 @Authorized()
+@JsonController("/api/friend-signals")
 export class FriendSignalController {
   @Get("/")
   async getAllFriendSignals(

@@ -1,13 +1,14 @@
 import {
-    BadRequestError,
-    Body,
-    CurrentUser,
-    Delete,
-    Get,
-    JsonController,
-    Param,
-    Patch,
-    QueryParam,
+  Authorized,
+  BadRequestError,
+  Body,
+  CurrentUser,
+  Delete,
+  Get,
+  JsonController,
+  Param,
+  Patch,
+  QueryParam,
 } from "routing-controllers";
 import { Brackets } from "typeorm";
 import { UpdateProfileBody } from "../dto/auth/login.dto";
@@ -16,6 +17,7 @@ import { User } from "../entity/user.entity";
 import { UserService } from "../service/user.service";
 import { AppUser } from "../types/auth";
 
+@Authorized()
 @JsonController("/api/users")
 export class UsersController {
   @Get("/")

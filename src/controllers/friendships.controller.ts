@@ -1,12 +1,13 @@
 import { IsBoolean, IsNotEmpty, IsOptional } from "class-validator";
 import {
-    Body,
-    CurrentUser,
-    Get,
-    HttpError,
-    JsonController,
-    Patch,
-    Post,
+  Authorized,
+  Body,
+  CurrentUser,
+  Get,
+  HttpError,
+  JsonController,
+  Patch,
+  Post,
 } from "routing-controllers";
 import { BaseEntity } from "typeorm";
 import { UpdateNotificationSettingsDto } from "../dto/friendship/update.notification.settings.dto";
@@ -28,6 +29,7 @@ type GetAllFriendshipsResponse = Omit<User, keyof BaseEntity> & {
   hasNotificationEnabled: boolean;
 };
 
+@Authorized()
 @JsonController("/api/friends")
 export class FriendshipController {
   @Get("/")

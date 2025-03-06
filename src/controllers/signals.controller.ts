@@ -1,11 +1,12 @@
 import { IsNotEmpty, IsString, MaxLength } from "class-validator";
 import {
-    Body,
-    CurrentUser,
-    Get,
-    JsonController,
-    Post,
-    Put,
+  Authorized,
+  Body,
+  CurrentUser,
+  Get,
+  JsonController,
+  Post,
+  Put,
 } from "routing-controllers";
 import { FriendSignal } from "../entity/friend.signal.entity";
 import { Signal } from "../entity/signal.entity";
@@ -27,6 +28,7 @@ class UpdateSignalBody {
   when: string;
 }
 
+@Authorized()
 @JsonController("/api/my-signal")
 export class SignalController {
   @Get("/")
