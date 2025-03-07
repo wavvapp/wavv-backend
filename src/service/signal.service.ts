@@ -31,7 +31,10 @@ class SignalService {
       relations: ["friendSignal.friendship.friend"],
     });
 
+    
     if (signal) {
+      signal.status_message = this.buildStatusMessage(signal, user)
+      
       const structuredSignalData = {
         ...signal,
         hasEnded: signal.hasEnded(user.timezone),
@@ -52,6 +55,14 @@ class SignalService {
 
       return structuredSignalData;
     }
+  }
+
+  isNextDay(date: Date, timezone: string) {
+    const now = startOfDay(toZonedTime(new Date(), timezone));
+    const activatedAt = startOfDay(date);
+    const daysInDiff = differenceInDays(now, activatedAt);
+
+    return daysInDiff > 0;
   }
 
   async getMyCurrentSignal(user: AppUser) {
@@ -86,6 +97,16 @@ class SignalService {
     return mySignal;
   }
 
+
+  buildStatusMessage (signal: Signal, user: AppUser) {
+    const hasEnded = signal.hasEnded(user.timezone);
+    const isNextDay = this.isNextDay(signal.activatedAt, user.timezone);
+
+    if (hasEnded && isNextDay) return DEFAULT_STATUS_MESSAGE
+
+    return signal.status_message
+  }
+
   async activateMySignal(user: AppUser) {
     const mySignal = await Signal.findOneOrFail({
       select: ["user", "activatedAt", "endsAt", "id"],
@@ -96,14 +117,7 @@ class SignalService {
     const hasEnded = mySignal.hasEnded(user.timezone);
 
     if (hasEnded) {
-      const now = startOfDay(toZonedTime(new Date(), user.timezone));
-      const activatedAt = startOfDay(mySignal.activatedAt);
-
-      const daysInDiff = differenceInDays(
-        now,
-        activatedAt
-      );
-      const isNextDay = daysInDiff > 0;
+      const isNextDay = this.isNextDay(mySignal.activatedAt, user.timezone);
 
       /**
        *
@@ -117,8 +131,10 @@ class SignalService {
           points: SIGNAL_ACTIVATION_POINTS,
         });
 
-        mySignal.activatedAt = now;
-        mySignal.status_message = DEFAULT_STATUS_MESSAGE;
+        mySignal.status_message = this.buildStatusMessage(mySignal, user);
+        mySignal.activatedAt = startOfDay(
+          toZonedTime(new Date(), user.timezone)
+        ); 
       }
 
       mySignal.endsAt = getNext3AM(user.timezone);

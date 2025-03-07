@@ -11,6 +11,8 @@ export class PointsController {
     const user = await User.findOneByOrFail({ id: currentUser.id });
     const pointsService = new PointsServices();
 
+    if(!user.authId) return { points: 0, isIcpIdInSync: !!user.principal  }
+    
     const points = await pointsService.getPointsByEmailId({id: user.id, sub: user.authId});
     return {...points, isIcpIdInSync: !!user.principal };
   }

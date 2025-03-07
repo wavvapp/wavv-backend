@@ -26,8 +26,17 @@ export class Signal extends BaseEntity {
   @Column({ nullable: true })
   status_message: string;
 
-  @Column({ type: "timestamp without time zone", default: () => "CURRENT_TIMESTAMP" })
-  endsAt: Date
+  @Column({
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  startsAt: Date;
+
+  @Column({
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  endsAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -35,17 +44,16 @@ export class Signal extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-
-  @Column({ type: "timestamp without time zone", default: () => "CURRENT_TIMESTAMP" })
-  activatedAt: Date
-
-
+  @Column({
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  activatedAt: Date;
 
   @OneToMany(() => FriendSignal, (friendSignal) => friendSignal.signal)
   friendSignal: FriendSignal[];
 
-
   hasEnded(timezone: string) {
-    return isDateExpired(this.endsAt, timezone)
+    return isDateExpired(this.endsAt, timezone);
   }
 }

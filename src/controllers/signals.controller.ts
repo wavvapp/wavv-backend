@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
+import {
+  IsDate,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from "class-validator";
 import {
   Authorized,
   Body,
@@ -26,6 +32,14 @@ class UpdateSignalBody {
   @IsNotEmpty()
   @IsString()
   when: string;
+
+  @IsOptional()
+  @IsDate()
+  startAt?: Date;
+
+  @IsOptional()
+  @IsDate()
+  endsAt?: Date;
 }
 
 @Authorized()
@@ -70,20 +84,19 @@ export class SignalController {
   ) {
     const { friends, status_message, when } = body;
     const signalService = new SignalService();
-    const signal = await signalService.initiateSignalIfNotExist(user)
+    const signal = await signalService.initiateSignalIfNotExist(user);
 
-    
     // Reset friends assigned on my signal
     await FriendSignal.delete({ signal: { id: signal.id } });
 
     await Signal.update(signal.id, {
       status_message: status_message,
-      when: when.toLowerCase()
+      when: when.toLowerCase(),
     });
 
     await signalService.addFriendsToMySignal({ friendIds: friends, user });
 
-    await signalService.activateMySignal(user)
+    await signalService.activateMySignal(user);
 
     // fetch friend signals
     return await signalService.getMySignalWithAssignedFriend(user);

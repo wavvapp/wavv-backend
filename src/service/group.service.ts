@@ -42,6 +42,34 @@ export class GroupsService {
     return await Group.delete({ id });
   }
 
+  private async addMemberIfNotExists(group: Group, friendShips: Friendship[]) {
+    for (const friendShip of friendShips) {
+      const membership = await Group.findOneBy({
+        id: group.id,
+        membership: { id: friendShip.id },
+      });
+      if (membership) continue;
+
+      group.membership.push(friendShip);
+    }
+
+    return await group.save();
+  }
+
+  private async removeMembersIfExists(group: Group, friendShips: Friendship[]) {
+    const newMembers: Friendship[] = [];
+    const currentMembers = group.membership;
+
+    for (const member of currentMembers) {
+        if(friendShips.find(friendShip => friendShip.id === member.id)) continue;
+        newMembers.push(member)
+    }
+
+    group.membership = newMembers;
+
+    return await group.save()
+  }
+
   async addGroupMembers(friendsId: string[], user: AppUser, groupId: string) {
     const group = await GroupsService.getById(groupId);
 
@@ -74,33 +102,5 @@ export class GroupsService {
     });
 
     return await this.removeMembersIfExists(group, friendships);
-  }
-
-  private async addMemberIfNotExists(group: Group, friendShips: Friendship[]) {
-    for (const friendShip of friendShips) {
-      const membership = await Group.findOneBy({
-        id: group.id,
-        membership: { id: friendShip.id },
-      });
-      if (membership) continue;
-
-      group.membership.push(friendShip);
-    }
-
-    return await group.save();
-  }
-
-  private async removeMembersIfExists(group: Group, friendShips: Friendship[]) {
-    const newMembers: Friendship[] = [];
-    const currentMembers = group.membership;
-
-    for (const member of currentMembers) {
-        if(friendShips.find(friendShip => friendShip.id === member.id)) continue;
-        newMembers.push(member)
-    }
-
-    group.membership = newMembers;
-
-    return await group.save()
   }
 }
