@@ -48,7 +48,7 @@ export class FriendSignalController {
       where: {
         friendSignal: {
           friendship: {
-            friend: {
+            user: {
               id: user.id,
             },
           },
