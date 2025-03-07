@@ -1,11 +1,7 @@
 {
   "branches": [
     "main",
-    {
-      "name": "releases/hotfix-**",
-      "prerelease": false,
-      "channel": false
-    }
+   "hotfix/**"
   ],
   "repositoryUrl": "https://github.com/wavvapp/wavv-backend",
   "tagFormat": "v${version}",
