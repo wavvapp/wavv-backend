@@ -1,5 +1,5 @@
 {
-  "branches": ["main"],
+  "branches": ["main", "hotfix/*"],
   "repositoryUrl": "https://github.com/wavvapp/wavv-backend",
   "tagFormat": "v${version}",
   "plugins": [
